@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String         @id @default(cuid())
+  username     String         @unique
+  email        String         @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  bookmarks    Bookmark[]
+  watchHistory WatchHistory[]
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  malId     Int
+  title     String
+  posterUrl String?
+  score     Float?
+  type      String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, malId])
+  @@index([userId])
+}
+
+model WatchHistory {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  malId           Int
+  animeTitle      String
+  posterUrl       String?
+  episodeNumber   Int
+  episodeTitle    String?
+  progressPercent Int      @default(0)
+  watchedAt       DateTime @default(now())
+
+  @@unique([userId, malId, episodeNumber])
+  @@index([userId])
+}
+
+model AnimeSlugMapping {
+  malId        Int      @id
+  slug         String   @unique
+  title        String
+  lastVerified DateTime @default(now())
+  createdAt    DateTime @default(now())
+}
+
+model DownloadedFile {
+  id              String   @id @default(cuid())
+  malId           Int
+  animeTitle      String
+  episodeNumber   Int
+  quality         String
+  fileName        String
+  filePath        String
+  sizeBytes       BigInt?
+  source          String   @default("manual")
+  createdAt       DateTime @default(now())
+
+  @@unique([malId, episodeNumber, quality])
+  @@index([malId])
+}
+
+model CachedAnime {
+  malId     Int      @id
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
