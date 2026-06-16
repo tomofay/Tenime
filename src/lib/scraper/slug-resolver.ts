@@ -145,6 +145,7 @@ export async function resolveAnime(
         return { slug: cached.slug, episodes: parsed.episodes };
       } catch {
         // stale cache — re-resolve below
+        console.warn(`[slug-resolver] Stale cache for malId=${malId}, slug=${cached.slug}`);
       }
     }
   }

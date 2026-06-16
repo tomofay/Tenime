@@ -1,6 +1,6 @@
 "use client";
 
-export type Tab = "overview" | "episodes" | "relations" | "trailer";
+export type Tab = "overview" | "episodes" | "characters" | "relations" | "trailer";
 
 interface TabNavigationProps {
   activeTab: Tab;
@@ -10,6 +10,7 @@ interface TabNavigationProps {
 const tabs: { key: Tab; label: string }[] = [
   { key: "overview", label: "Overview" },
   { key: "episodes", label: "Episodes" },
+  { key: "characters", label: "Characters" },
   { key: "relations", label: "Relations" },
   { key: "trailer", label: "Trailer" },
 ];

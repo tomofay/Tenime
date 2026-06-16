@@ -170,3 +170,23 @@ export interface EpisodeListResponse {
   data: Episode[];
   pagination: Pagination;
 }
+
+export interface AnimeCharacterSimple {
+  mal_id: number;
+  name: string;
+  role: string;
+  image_url: string;
+}
+
+export interface AnimeCharacterResponse {
+  character: {
+    mal_id: number;
+    name: string;
+    images: { webp: { image_url: string }; jpg: { image_url: string } };
+  };
+  role: string;
+}
+
+export interface AnimeCharacterListResponse {
+  data: AnimeCharacterResponse[];
+}

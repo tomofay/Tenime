@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark } from "lucide-react";
+import { BookmarkPlus, BookmarkCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useBookmarks, useToggleBookmark } from "@/hooks/useBookmarks";
@@ -44,16 +44,16 @@ export function BookmarkButton({
       disabled={isPending}
       className={`inline-flex items-center gap-1.5 rounded-md transition-colors ${
         isBookmarked
-          ? "bg-accent/10 text-accent hover:bg-accent/20"
+          ? "bg-green-500/10 text-green-400 hover:bg-green-500/20"
           : "bg-surface text-muted hover:text-foreground"
       } ${size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm"}`}
     >
-      <Bookmark
-        className={`${size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} ${
-          isBookmarked ? "fill-accent" : ""
-        }`}
-      />
-      {isBookmarked ? "Bookmarked" : "Bookmark"}
+      {isBookmarked ? (
+        <BookmarkCheck className={`${size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"}`} />
+      ) : (
+        <BookmarkPlus className={`${size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"}`} />
+      )}
+      {isBookmarked ? "Watchlist" : "Tambah Watchlist"}
     </button>
   );
 }

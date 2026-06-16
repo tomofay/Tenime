@@ -33,11 +33,13 @@ export async function cacheAnimeData(malId: number, data: unknown): Promise<void
             writeFileSync(posterPath, buffer);
           }
         }
-      } catch {
-        // poster download non-critical
+      } catch (e) {
+        console.error("[anime-cache] Failed to download poster for malId=" + malId, e);
       }
     }
-  } catch { /* fail silently */ }
+  } catch (e) {
+    console.error("[anime-cache] Failed to cache anime malId=" + malId, e);
+  }
 }
 
 export async function getCachedAnimeData(malId: number): Promise<unknown | null> {

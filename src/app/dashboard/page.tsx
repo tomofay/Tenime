@@ -3,7 +3,7 @@ import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Kelola bookmark dan riwayat tontonan anime kamu.",
+  description: "Kelola watchlist dan riwayat tontonan anime kamu.",
 };
 
 export default function DashboardPage() {

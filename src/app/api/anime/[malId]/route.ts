@@ -2,11 +2,16 @@ import { NextResponse } from "next/server";
 import { getAnimeFull } from "@/lib/jikan";
 import { db } from "@/lib/db";
 import { cacheAnimeData } from "@/lib/anime-cache";
+import { withRateLimit } from "@/lib/api-utils";
+
+const ANIME_LIMIT = { windowMs: 60_000, maxRequests: 60 };
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ malId: string }> }
 ) {
+  const rateLimit = withRateLimit(request, ANIME_LIMIT);
+  if (rateLimit) return rateLimit;
   const { malId } = await params;
   const id = Number(malId);
 

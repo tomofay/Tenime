@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "../../prisma/generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import { existsSync, statSync, writeFileSync } from "fs";
+import { existsSync, statSync } from "fs";
+import { promises as fsp } from "fs";
 import path from "path";
 import { extractAceFileData, getGoogleDriveDirectUrl } from "./scraper/acefile-extractor";
 
@@ -89,9 +90,9 @@ export async function downloadEpisode(
   if (!response.ok) return { success: false, error: `Drive download failed: HTTP ${response.status}` };
 
   const buffer = Buffer.from(await response.arrayBuffer());
-  writeFileSync(filePath, buffer);
+  await fsp.writeFile(filePath, buffer);
 
-  const stats = statSync(filePath);
+  const stats = await fsp.stat(filePath);
 
   await db.downloadedFile.upsert({
     where: { malId_episodeNumber_quality: { malId, episodeNumber: ep, quality } },

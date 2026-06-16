@@ -25,6 +25,7 @@ export function useAnimeSearch() {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
+      if (!lastPage?.pagination) return undefined;
       if (lastPage.pagination.has_next_page) {
         return lastPage.pagination.current_page + 1;
       }

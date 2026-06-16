@@ -36,7 +36,8 @@ export function AnimeGrid() {
 
   const seen = new Set<number>();
   const allAnime = (data?.pages.flatMap((page) => page.data) ?? [])
-    .filter((a) => { if (seen.has(a.mal_id)) return false; seen.add(a.mal_id); return true; });
+    .filter((a): a is NonNullable<typeof a> => !!a)
+    .filter((a, i, arr) => { if (seen.has(a.mal_id)) return false; seen.add(a.mal_id); return true; });
 
   if (allAnime.length === 0) {
     return (

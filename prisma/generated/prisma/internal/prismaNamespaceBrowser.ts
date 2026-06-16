@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Comment: 'Comment',
   Bookmark: 'Bookmark',
   WatchHistory: 'WatchHistory',
   AnimeSlugMapping: 'AnimeSlugMapping',
@@ -81,11 +82,25 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   avatarUrl: 'avatarUrl',
+  bio: 'bio',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CommentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  malId: 'malId',
+  episodeNumber: 'episodeNumber',
+  body: 'body',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
 export const BookmarkScalarFieldEnum = {
@@ -182,10 +197,20 @@ export const UserOrderByRelevanceFieldEnum = {
   username: 'username',
   email: 'email',
   passwordHash: 'passwordHash',
-  avatarUrl: 'avatarUrl'
+  avatarUrl: 'avatarUrl',
+  bio: 'bio'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+export const CommentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  body: 'body'
+} as const
+
+export type CommentOrderByRelevanceFieldEnum = (typeof CommentOrderByRelevanceFieldEnum)[keyof typeof CommentOrderByRelevanceFieldEnum]
 
 
 export const BookmarkOrderByRelevanceFieldEnum = {

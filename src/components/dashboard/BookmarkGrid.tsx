@@ -13,7 +13,7 @@ export function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
   if (bookmarks.length === 0) {
     return (
       <div className="py-12 text-center">
-        <p className="text-sm text-muted">Belum ada anime di-bookmark.</p>
+        <p className="text-sm text-muted">Watchlist kamu masih kosong.</p>
       </div>
     );
   }

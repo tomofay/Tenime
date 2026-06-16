@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { watchHistoryCreateSchema } from "@/lib/validation";
 
 export async function GET() {
   const session = await auth();
@@ -23,15 +24,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { malId, animeTitle, posterUrl, episodeNumber, episodeTitle } =
-    await request.json();
+  const body = await request.json();
+  const parsed = watchHistoryCreateSchema.safeParse(body);
 
-  if (!malId || !animeTitle || !episodeNumber) {
-    return NextResponse.json(
-      { error: "malId, animeTitle, and episodeNumber are required" },
-      { status: 400 }
-    );
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
+
+  const { malId, animeTitle, posterUrl, episodeNumber, episodeTitle } = parsed.data;
 
   const history = await db.watchHistory.upsert({
     where: {

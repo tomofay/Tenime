@@ -3,6 +3,7 @@
 import { useFilterStore, type AnimeType, type AnimeStatus, type SortField } from "@/store/useFilterStore";
 import { SearchInput } from "./SearchInput";
 import { SlidersHorizontal } from "lucide-react";
+import { GENRE_LIST } from "@/lib/constants";
 
 const animeTypes: { value: AnimeType; label: string }[] = [
   { value: "", label: "Semua" },
@@ -44,6 +45,11 @@ const popularGenres = [
   { id: 37, name: "Mystery" },
   { id: 41, name: "Thriller" },
 ];
+
+const allGenres = Object.entries(GENRE_LIST).map(([id, name]) => ({
+  id: Number(id),
+  name,
+}));
 
 export function FilterSidebar() {
   const type = useFilterStore((s) => s.type);
@@ -121,8 +127,8 @@ export function FilterSidebar() {
       {/* Genres */}
       <div>
         <h3 className="text-xs font-medium text-muted mb-2">Genre</h3>
-        <div className="flex flex-wrap gap-1.5">
-          {popularGenres.map((genre) => (
+        <div className="flex flex-wrap gap-1.5 max-h-[400px] overflow-y-auto scrollbar-thin">
+          {allGenres.map((genre) => (
             <button
               key={genre.id}
               onClick={() => toggleGenre(genre.id)}

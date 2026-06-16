@@ -1,29 +1,35 @@
 import { NextResponse } from "next/server";
 import { getAnimeFull } from "@/lib/jikan";
 import { db } from "@/lib/db";
-import { getDownloadStatus } from "@/lib/downloader";
+import { cacheAnimeData } from "@/lib/anime-cache";
+import { cacheAnimeSchema } from "@/lib/validation";
+import { withRateLimit } from "@/lib/api-utils";
+
+const CACHE_LIMIT = { windowMs: 60_000, maxRequests: 10 };
 
 export async function POST(request: Request) {
+  const rateLimit = withRateLimit(request, CACHE_LIMIT);
+  if (rateLimit) return rateLimit;
   try {
     const body = await request.json();
-    const { malIds } = body;
+    const parsed = cacheAnimeSchema.safeParse(body);
 
-    if (!Array.isArray(malIds)) {
-      return NextResponse.json({ error: "malIds array required" }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ error: "malIds must be an array of positive integers (max 25)" }, { status: 400 });
     }
 
+    const { malIds } = parsed.data;
     const results: Record<string, unknown> = {};
 
-    for (const malId of malIds.slice(0, 25)) {
+    for (const malId of malIds) {
       try {
         const anime = await getAnimeFull(malId);
-        await db.cachedAnime.upsert({
-          where: { malId },
-          update: { data: anime as object, updatedAt: new Date() },
-          create: { malId, data: anime as object },
+        await cacheAnimeData(malId, anime);
+
+        const download = await db.downloadedFile.findFirst({
+          where: { malId }, orderBy: { createdAt: "desc" },
         });
 
-        const download = await getDownloadStatus(malId, 0);
         results[String(malId)] = {
           title: anime.title,
           episodes: anime.episodes,
@@ -32,7 +38,7 @@ export async function POST(request: Request) {
           type: anime.type,
           year: anime.year,
           poster: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url || null,
-          downloaded: download.downloaded,
+          downloaded: !!download,
         };
       } catch {
         results[String(malId)] = { error: "failed" };

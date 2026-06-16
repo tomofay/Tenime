@@ -12,12 +12,17 @@ export async function fetchWithRetry(
   url: string,
   retries = Number(process.env.SCRAPER_RETRY_COUNT) || 2
 ): Promise<string> {
-  const timeout = Number(process.env.SCRAPER_TIMEOUT_MS) || 25000;
+  const requestTimeout = Number(process.env.SCRAPER_TIMEOUT_MS) || 25000;
+  const totalTimeout = Number(process.env.SCRAPER_TOTAL_TIMEOUT_MS) || 45000;
+  const startTime = Date.now();
 
   for (let attempt = 0; attempt < retries; attempt++) {
+    if (Date.now() - startTime > totalTimeout) {
+      throw new Error(`Total timeout exceeded for ${url}`);
+    }
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeout);
+      const timer = setTimeout(() => controller.abort(), requestTimeout);
 
       const response = await fetch(url, {
         signal: controller.signal,

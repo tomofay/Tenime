@@ -22,7 +22,7 @@ export async function extractAceFileData(acefileUrl: string) {
     try {
       const d = Buffer.from(b64, "base64").toString("utf-8");
       if (/^[\x20-\x7E]+$/.test(d)) decoded.push(d);
-    } catch {}
+    } catch { /* skip invalid base64 */ }
   }
 
   // Find API key from decoded base64 URLs (inside URL params like &key=XXX)
@@ -41,7 +41,7 @@ export async function extractAceFileData(acefileUrl: string) {
         fileId = d;
         break;
       }
-    } catch {}
+    } catch { /* skip invalid base64 */ }
   }
 
   if (!apiKey || !fileId) {

@@ -13,10 +13,26 @@ model User {
   email        String         @unique
   passwordHash String
   avatarUrl    String?
+  bio          String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   bookmarks    Bookmark[]
   watchHistory WatchHistory[]
+  comments     Comment[]
+}
+
+model Comment {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  malId         Int
+  episodeNumber Int
+  body          String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([malId, episodeNumber])
+  @@index([userId])
 }
 
 model Bookmark {

@@ -2,8 +2,14 @@ import { NextResponse } from "next/server";
 import { getEpisodeStream } from "@/lib/scraper";
 import { getLocalStreamUrl } from "@/lib/downloader";
 import { db } from "@/lib/db";
+import { withRateLimit } from "@/lib/api-utils";
+
+const STREAM_LIMIT = { windowMs: 60_000, maxRequests: 30 };
 
 export async function GET(request: Request) {
+  // Rate limit: 30 requests per minute per IP
+  const rateLimit = withRateLimit(request, STREAM_LIMIT);
+  if (rateLimit) return rateLimit;
   const { searchParams } = new URL(request.url);
 
   const malId = searchParams.get("malId");

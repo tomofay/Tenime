@@ -19,11 +19,9 @@ export async function getEpisodeStream(
   const epLink = resolved.episodes.find((e) => e.number === episode);
 
   if (!epLink) {
-    console.log(`[scraper] Episode ${episode} not found in ${resolved.episodes.length} episodes: [${resolved.episodes.map(e => `${e.number}(${e.title.slice(0,20)})`).join(", ")}]`);
     return { episode, embedUrl: "", qualities: [], mirrors: [], episodeUrl: "" };
   }
 
-  console.log(`[scraper] Fetching episode ${episode}: ${epLink.url} (${epLink.title})`);
   const stream = await fetchEpisodeStreamFromUrl(epLink.url);
 
   const result: StreamSource = {

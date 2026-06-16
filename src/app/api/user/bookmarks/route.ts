@@ -1,6 +1,7 @@
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { bookmarkCreateSchema, bookmarkDeleteSchema } from "@/lib/validation";
 
 export async function GET() {
   const session = await auth();
@@ -22,14 +23,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { malId, title, posterUrl, score, type } = await request.json();
+  const body = await request.json();
+  const parsed = bookmarkCreateSchema.safeParse(body);
 
-  if (!malId || !title) {
-    return NextResponse.json(
-      { error: "malId and title are required" },
-      { status: 400 }
-    );
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
+
+  const { malId, title, posterUrl, score, type } = parsed.data;
 
   const existing = await db.bookmark.findUnique({
     where: { userId_malId: { userId: session.user.id, malId } },
@@ -44,9 +45,9 @@ export async function POST(request: Request) {
       userId: session.user.id,
       malId,
       title,
-      posterUrl: posterUrl || null,
-      score: score || null,
-      type: type || null,
+      posterUrl,
+      score,
+      type,
     },
   });
 
@@ -60,19 +61,16 @@ export async function DELETE(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const malId = searchParams.get("malId");
+  const parsed = bookmarkDeleteSchema.safeParse({ malId: searchParams.get("malId") });
 
-  if (!malId) {
-    return NextResponse.json(
-      { error: "malId is required" },
-      { status: 400 }
-    );
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid malId" }, { status: 400 });
   }
 
   await db.bookmark.deleteMany({
     where: {
       userId: session.user.id,
-      malId: Number(malId),
+      malId: parsed.data.malId,
     },
   });
 
