@@ -30,8 +30,14 @@ export const downloadSchema = z.object({
   malId: z.number().int().positive(),
   episodeNumber: z.number().int().positive(),
   animeTitle: z.string().optional().default(""),
-  url: z.string().url(),
+  url: z.string().url().optional(),
   quality: z.string().optional().default("720p"),
+  mirrors: z.array(z.object({ name: z.string(), url: z.string().url() })).optional(),
+  downloadGroups: z.array(z.object({
+    format: z.enum(["mp4", "mkv"]),
+    quality: z.enum(["360p", "480p", "720p", "1080p"]),
+    mirrors: z.array(z.object({ name: z.string(), url: z.string().url() })),
+  })).optional(),
 });
 
 export const downloadQuerySchema = z.object({
@@ -64,3 +70,20 @@ export type BookmarkCreateInput = z.infer<typeof bookmarkCreateSchema>;
 export type WatchHistoryCreateInput = z.infer<typeof watchHistoryCreateSchema>;
 export type DownloadInput = z.infer<typeof downloadSchema>;
 export type CacheAnimeInput = z.infer<typeof cacheAnimeSchema>;
+
+export const commentCreateSchema = z.object({
+  malId: z.number().int().positive(),
+  episodeNumber: z.number().int().positive(),
+  body: z.string().min(1, "Komentar tidak boleh kosong").max(2000, "Maksimal 2000 karakter"),
+});
+
+export const commentQuerySchema = z.object({
+  malId: z.coerce.number().int().positive(),
+  ep: z.coerce.number().int().positive(),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(50),
+  offset: z.coerce.number().int().min(0).optional().default(0),
+});
+
+export const commentDeleteSchema = z.object({
+  id: z.string().min(1),
+});

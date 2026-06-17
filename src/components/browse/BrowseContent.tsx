@@ -19,6 +19,7 @@ export function BrowseContent() {
   const type = useFilterStore((s) => s.type);
   const status = useFilterStore((s) => s.status);
   const genres = useFilterStore((s) => s.genres);
+  const seasonValue = useFilterStore((s) => s.seasonValue);
   const sort = useFilterStore((s) => s.sort);
   const sortDirection = useFilterStore((s) => s.sortDirection);
   const setQuery = useFilterStore((s) => s.setQuery);
@@ -27,6 +28,7 @@ export function BrowseContent() {
   const setGenres = useFilterStore((s) => s.setGenres);
   const setSort = useFilterStore((s) => s.setSort);
   const setSortDirection = useFilterStore((s) => s.setSortDirection);
+  const setSeasonValue = useFilterStore((s) => s.setSeasonValue);
 
   // Sync URL → State on mount (only once)
   useEffect(() => {
@@ -39,6 +41,8 @@ export function BrowseContent() {
     const g = searchParams.get("genres");
     const sortParam = searchParams.get("sort");
     const dir = searchParams.get("dir");
+    const ssn = searchParams.get("season");
+    const yr = searchParams.get("year");
 
     if (q !== null) setQuery(q);
     if (t) setType(t as AnimeType);
@@ -46,6 +50,7 @@ export function BrowseContent() {
     if (g) setGenres(g.split(",").map(Number).filter(Boolean));
     if (sortParam) setSort(sortParam as SortField);
     if (dir === "asc" || dir === "desc") setSortDirection(dir);
+    if (ssn) setSeasonValue(ssn);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync State → URL on change
@@ -59,6 +64,7 @@ export function BrowseContent() {
       params.set("sort", sort);
       params.set("dir", sortDirection);
     }
+    if (seasonValue) params.set("season", seasonValue);
 
     const newUrl = params.toString()
       ? `/browse?${params.toString()}`

@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { downloadEpisode, getDownloadStatus } from "@/lib/downloader";
-import { extractAceFileData } from "@/lib/scraper/acefile-extractor";
 import { downloadSchema, downloadQuerySchema } from "@/lib/validation";
 import { withRateLimit } from "@/lib/api-utils";
+import type { DownloadGroup } from "@/types/stream";
 
-const DOWNLOAD_LIMIT = { windowMs: 60_000, maxRequests: 10 };
+const DOWNLOAD_LIMIT = { windowMs: 60_000, maxRequests: 15 };
+const BATCH_LIMIT = { windowMs: 60_000, maxRequests: 30 };
 
 export async function GET(request: Request) {
-  const rateLimit = withRateLimit(request, DOWNLOAD_LIMIT);
+  const url = new URL(request.url);
+  const isBatch = url.searchParams.get("batch") === "1";
+  const rateLimit = withRateLimit(request, isBatch ? BATCH_LIMIT : DOWNLOAD_LIMIT);
   if (rateLimit) return rateLimit;
 
   const { searchParams } = new URL(request.url);
@@ -24,8 +27,7 @@ export async function GET(request: Request) {
     const status = await getDownloadStatus(parsed.data.malId, parsed.data.ep);
     return NextResponse.json(status);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: msg }, { status: 502 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 502 });
   }
 }
 
@@ -41,18 +43,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
-    const { malId, episodeNumber, animeTitle, url, quality } = parsed.data;
+    const { malId, episodeNumber, animeTitle, quality, downloadGroups } = parsed.data;
+    const effectiveQuality = quality || "720p";
 
-    const gd = await extractAceFileData(url);
-
-    if (!gd) {
-      return NextResponse.json({ success: false, error: "Could not extract Google Drive info from AceFile" }, { status: 500 });
+    // Use downloadGroups if available, otherwise fall back to mirrors
+    let groups: DownloadGroup[] = downloadGroups as DownloadGroup[] | undefined || [];
+    if (groups.length === 0) {
+      // Build basic groups from flat mirrors (backward compat)
+      const mirrors = (parsed.data as any).mirrors || [];
+      if (mirrors.length === 0) {
+        return NextResponse.json({ success: false, error: "No download groups or mirrors provided" }, { status: 400 });
+      }
+      groups = [{ format: "mp4", quality: "720p", mirrors }];
     }
 
-    const result = await downloadEpisode(malId, episodeNumber, animeTitle, url, quality);
+    const result = await downloadEpisode(malId, episodeNumber, animeTitle || "", groups, effectiveQuality);
     return NextResponse.json(result);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: msg }, { status: 502 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 502 });
   }
 }

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { fetchWithRetry } from "./bypass";
 import { parseAnimeDetail } from "./detail-parser";
-import { OTAKUDESU_BASE_URL } from "@/lib/constants";
+import { OTAKUDESU_BASE_URL, OTAKUDESU_FALLBACK_URLS } from "@/lib/constants";
 
 function tokenizeTitle(title: string): string {
   return title
@@ -47,9 +47,17 @@ function extractSeasonNumber(title: string): number | null {
 async function searchAndFindAnimeUrl(jikanTitle: string): Promise<string | null> {
   const cheerioModule = await import("cheerio");
 
+  // Normalize "2nd Season" → "Season 2" for Otakudesu search compatibility
+  const normalizedTitle = jikanTitle
+    .replace(/(\d+)(?:st|nd|rd|th)\s+Season/i, "Season $1")
+    .replace(/Season\s+(\d+)/i, "S$1");
+
   const searchQueries = [
     jikanTitle,
-    tokenizeTitle(jikanTitle).replace(/(\d+)(st|nd|rd|th)\s+Season/, "Season $1"),
+    normalizedTitle,
+    tokenizeTitle(normalizedTitle),
+    tokenizeTitle(jikanTitle).replace(/(\d+)(st|nd|rd|th)\s+Season/, "season $1"),
+    tokenizeTitle(jikanTitle).replace(/\d+(?:st|nd|rd|th)?\s*season/i, "").trim(),
     tokenizeTitle(jikanTitle).split(" ").slice(0, 4).join(" "),
   ];
 
@@ -163,7 +171,7 @@ export async function resolveAnime(
   }
 
   // 2. Search
-  const detailUrl = await searchAndFindAnimeUrl(jikanTitle);
+  const detailUrl = await searchAndFindAnimeUrl(effectiveTitle);
 
   if (!detailUrl) {
     throw new Error(

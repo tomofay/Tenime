@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAnimeDetail } from "@/hooks/useAnimeDetail";
 import { useAnimeEpisodes } from "@/hooks/useAnimeEpisodes";
 import { useVideoSource } from "@/hooks/useVideoSource";
+import { useAutoplay } from "@/hooks/useAutoplay";
 import { useAutoSaveHistory } from "@/hooks/useAutoSaveHistory";
 import { VideoPlayer } from "@/components/watch/VideoPlayer";
 import { MirrorSelector } from "@/components/watch/MirrorSelector";
@@ -29,9 +30,12 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
   const handleMirrorChange = useCallback((newEmbedUrl: string) => { setActiveEmbedUrl(newEmbedUrl); }, []);
 
   const episodes = episodesData?.data ?? [];
+  const totalEpisodes = episodes.length;
   const currentEpisodeTitle = episodes.find((e) => Number(e.episode) === ep)?.title ?? "";
   const displayTitle = currentEpisodeTitle && currentEpisodeTitle !== `Episode ${ep}` ? currentEpisodeTitle : `Episode ${ep}`;
 
+  const isPlaying = !!streamSource && !isLoading && !!streamSource.embedUrl;
+  useAutoplay({ malId: id, currentEpisode: ep, totalEpisodes, isPlaying });
   useAutoSaveHistory(id, ep, anime?.title ?? "", anime?.images?.webp?.large_image_url, currentEpisodeTitle);
 
   return (
@@ -56,7 +60,7 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
           <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-foreground">{displayTitle}</p></div></div>
 
           {streamSource?.qualities && streamSource.qualities.length > 0 && <MirrorSelector qualities={streamSource.qualities} onSelectMirror={handleMirrorChange} />}
-          <DownloadSection mirrors={streamSource?.mirrors ?? []} malId={id} episode={ep} />
+          <DownloadSection mirrors={streamSource?.mirrors ?? []} downloadGroups={streamSource?.downloadGroups} malId={id} episode={ep} animeTitle={anime?.title} />
           <EpisodeComments malId={id} episodeNumber={ep} />
         </div>
 

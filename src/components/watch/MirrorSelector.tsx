@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Monitor, Loader2 } from "lucide-react";
+import { Monitor, Loader2, AlertCircle } from "lucide-react";
 import type { MirrorOption } from "@/types/stream";
 
 interface MirrorSelectorProps {
@@ -14,6 +14,8 @@ const qualityOrder = ["1080p", "720p", "480p", "360p"];
 export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProps) {
   const [activeQuality, setActiveQuality] = useState("720p");
   const [loadingMirror, setLoadingMirror] = useState<string | null>(null);
+  const [failedMirrors, setFailedMirrors] = useState<Set<string>>(new Set());
+  const [errorMsg, setErrorMsg] = useState("");
 
   const sorted = [...qualities].sort((a, b) => qualityOrder.indexOf(a.quality) - qualityOrder.indexOf(b.quality));
   const currentQuality = sorted.find((q) => q.quality === activeQuality) ?? sorted[0];
@@ -21,12 +23,23 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
   async function handleMirrorClick(mirror: MirrorOption) {
     const key = `${mirror.id}-${mirror.i}-${mirror.q}`;
     setLoadingMirror(key);
+    setErrorMsg("");
     try {
       const res = await fetch(`/api/mirror?id=${mirror.id}&i=${mirror.i}&q=${mirror.q}`);
       const data = await res.json();
-      if (data.embedUrl) onSelectMirror(data.embedUrl);
-    } catch { /* silently fail */ }
-    finally { setLoadingMirror(null); }
+      if (data.embedUrl) {
+        onSelectMirror(data.embedUrl);
+        setFailedMirrors((prev) => { const next = new Set(prev); next.delete(key); return next; });
+      } else {
+        setFailedMirrors((prev) => new Set(prev).add(key));
+        setErrorMsg(`Mirror "${mirror.name}" tidak tersedia. Coba mirror lain.`);
+      }
+    } catch {
+      setFailedMirrors((prev) => new Set(prev).add(key));
+      setErrorMsg(`Gagal menghubungi mirror "${mirror.name}".`);
+    } finally {
+      setLoadingMirror(null);
+    }
   }
 
   if (sorted.length === 0) return null;
@@ -36,8 +49,6 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
       <div className="flex items-center gap-2">
         <Monitor className="h-3.5 w-3.5 text-muted shrink-0" />
         <span className="text-xs font-medium text-muted">Mirror</span>
-
-        {/* Quality tabs */}
         <div className="flex items-center gap-1 ml-2">
           {sorted.map((q) => (
             <button
@@ -55,24 +66,33 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
         </div>
       </div>
 
-      {/* Mirror buttons */}
       <div className="flex flex-wrap gap-1.5">
         {currentQuality?.mirrors.map((mirror) => {
           const key = `${mirror.id}-${mirror.i}-${mirror.q}`;
           const isLoading = loadingMirror === key;
+          const isFailed = failedMirrors.has(key);
           return (
             <button
               key={key}
               onClick={() => handleMirrorClick(mirror)}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-surface hover:bg-surface-hover disabled:opacity-50 px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors border border-border/50"
+              className={`inline-flex items-center gap-1.5 rounded-lg bg-surface hover:bg-surface-hover disabled:opacity-50 px-3 py-1.5 text-xs transition-colors border ${
+                isFailed ? "text-red-400 border-red-500/20" : "text-muted hover:text-foreground border-border/50"
+              }`}
             >
-              {isLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+              {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isFailed && <AlertCircle className="h-3 w-3 text-red-400" />}
               {mirror.name}
             </button>
           );
         })}
       </div>
+
+      {errorMsg && (
+        <p className="text-[11px] text-red-400/80 flex items-center gap-1">
+          <AlertCircle className="h-3 w-3 shrink-0" />
+          {errorMsg}
+        </p>
+      )}
     </div>
   );
 }

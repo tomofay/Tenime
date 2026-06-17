@@ -29,6 +29,19 @@ const sortOptions: { value: SortField; label: string }[] = [
   { value: "start_date", label: "Release Date" },
 ];
 
+const seasons = ["fall", "summer", "spring", "winter"] as const;
+const currentYear = new Date().getFullYear();
+const seasonOptions = (() => {
+  const opts: { value: string; label: string }[] = [{ value: "", label: "Semua Season" }];
+  for (let y = currentYear + 1; y >= 1917; y--) {
+    for (const s of seasons) {
+      const label = s.charAt(0).toUpperCase() + s.slice(1);
+      opts.push({ value: `${y}-${s}`, label: `${label} ${y}` });
+    }
+  }
+  return opts;
+})();
+
 const popularGenres = [
   { id: 1, name: "Action" },
   { id: 2, name: "Adventure" },
@@ -57,12 +70,16 @@ export function FilterSidebar() {
   const genres = useFilterStore((s) => s.genres);
   const sort = useFilterStore((s) => s.sort);
   const sortDirection = useFilterStore((s) => s.sortDirection);
+  const seasonValue = useFilterStore((s) => s.seasonValue);
+  const downloadedOnly = useFilterStore((s) => s.downloadedOnly);
 
   const setType = useFilterStore((s) => s.setType);
   const setStatus = useFilterStore((s) => s.setStatus);
   const toggleGenre = useFilterStore((s) => s.toggleGenre);
   const setSort = useFilterStore((s) => s.setSort);
   const setSortDirection = useFilterStore((s) => s.setSortDirection);
+  const setSeasonValue = useFilterStore((s) => s.setSeasonValue);
+  const setDownloadedOnly = useFilterStore((s) => s.setDownloadedOnly);
   const resetFilters = useFilterStore((s) => s.resetFilters);
 
   return (
@@ -122,6 +139,29 @@ export function FilterSidebar() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Downloaded Only toggle */}
+      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-border bg-surface p-2.5 hover:border-accent/30 transition-colors">
+        <div className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${downloadedOnly ? "bg-green-500" : "bg-muted/30"}`}>
+          <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${downloadedOnly ? "left-[18px]" : "left-0.5"}`} />
+        </div>
+        <span className="text-xs text-muted">{downloadedOnly ? "Downloaded only" : "Tersimpan di server"}</span>
+        <input type="checkbox" checked={downloadedOnly} onChange={(e) => setDownloadedOnly(e.target.checked)} className="sr-only" />
+      </label>
+
+      {/* Season */}
+      <div>
+        <h3 className="text-xs font-medium text-muted mb-2">Season</h3>
+        <select
+          value={seasonValue}
+          onChange={(e) => setSeasonValue(e.target.value)}
+          className="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+        >
+          {seasonOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Genres */}

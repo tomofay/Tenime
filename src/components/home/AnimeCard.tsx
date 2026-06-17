@@ -3,10 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Download, Sparkles } from "lucide-react";
-import type { Anime } from "@/types/anime";
 
 interface AnimeCardProps {
-  anime: Anime;
+  anime: {
+    mal_id: number;
+    title: string;
+    images: { webp: { large_image_url: string } };
+    score?: number | null;
+    episodes?: number | null;
+    type?: string;
+    airing?: boolean;
+    synopsis?: string | null;
+  };
   size?: "sm" | "md";
   isDownloaded?: boolean;
   rank?: number;

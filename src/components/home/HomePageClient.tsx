@@ -11,15 +11,12 @@ import { AnimeCard } from "@/components/home/AnimeCard";
 import { ContinueWatchingSection } from "@/components/home/ContinueWatchingSection";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { toAnimeCardData } from "@/lib/anime-card-data";
 import { WifiOff } from "lucide-react";
 
 function dedupByMalId<T extends { mal_id: number }>(arr: T[]): T[] {
   const seen = new Set<number>();
-  return arr.filter((a) => {
-    if (seen.has(a.mal_id)) return false;
-    seen.add(a.mal_id);
-    return true;
-  });
+  return arr.filter((a) => { if (seen.has(a.mal_id)) return false; seen.add(a.mal_id); return true; });
 }
 
 export function HomePageClient() {
@@ -53,18 +50,7 @@ export function HomePageClient() {
       {offlineList && offlineList.count > 0 && (
         <Section title={`Tersimpan Lokal (${offlineList.count})`} variant="horizontal" seeAllHref="/browse">
           {offlineList.results.map((item) => (
-            <AnimeCard
-              key={item.malId}
-              anime={{
-                mal_id: item.malId,
-                title: item.title,
-                images: { webp: { large_image_url: item.poster ?? "" }, jpg: { large_image_url: item.poster ?? "", image_url: "", small_image_url: "" } },
-                score: item.score ?? 0,
-                episodes: item.episodes,
-                type: item.type,
-              } as any}
-              isDownloaded={item.downloaded}
-            />
+            <AnimeCard key={item.malId} anime={toAnimeCardData(item)} isDownloaded={item.downloaded} />
           ))}
         </Section>
       )}

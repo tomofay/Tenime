@@ -14,6 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { triggerSearchPalette } from "@/components/layout/CommandPalette";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -82,6 +83,14 @@ export function Navbar() {
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+
+          <button
+            onClick={() => triggerSearchPalette()}
+            className="md:hidden rounded-md p-1.5 text-muted hover:text-foreground hover:bg-surface transition-colors"
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5" />
           </button>
         </div>
       </div>

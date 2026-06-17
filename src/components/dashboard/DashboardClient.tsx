@@ -6,11 +6,12 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useWatchHistory } from "@/hooks/useWatchHistory";
 import { BookmarkGrid } from "@/components/dashboard/BookmarkGrid";
 import { HistoryTimeline } from "@/components/dashboard/HistoryTimeline";
-import { Bookmark, Clock, LogOut, Settings } from "lucide-react";
+import { DownloadedGrid } from "@/components/dashboard/DownloadedGrid";
+import { Bookmark, Clock, LogOut, Settings, Download } from "lucide-react";
 import Link from "next/link";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
-type DashboardTab = "bookmarks" | "history";
+type DashboardTab = "bookmarks" | "history" | "downloads";
 
 export function DashboardClient() {
   const { data: session } = useSession();
@@ -18,11 +19,11 @@ export function DashboardClient() {
   const { data: bookmarks } = useBookmarks();
   const { data: history } = useWatchHistory();
 
-  const tabs: { key: DashboardTab; icon: typeof Bookmark; label: string }[] =
-    [
-      { key: "bookmarks", icon: Bookmark, label: "Watchlist" },
-      { key: "history", icon: Clock, label: "History" },
-    ];
+  const tabs: { key: DashboardTab; icon: typeof Bookmark; label: string }[] = [
+    { key: "bookmarks", icon: Bookmark, label: "Watchlist" },
+    { key: "history", icon: Clock, label: "History" },
+    { key: "downloads", icon: Download, label: "Downloads" },
+  ];
 
   return (
     <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
@@ -81,12 +82,9 @@ export function DashboardClient() {
         </nav>
       </div>
 
-      {activeTab === "bookmarks" && (
-        <BookmarkGrid bookmarks={bookmarks ?? []} />
-      )}
-      {activeTab === "history" && (
-        <HistoryTimeline history={history ?? []} />
-      )}
+      {activeTab === "bookmarks" && <BookmarkGrid bookmarks={bookmarks ?? []} />}
+      {activeTab === "history" && <HistoryTimeline history={history ?? []} />}
+      {activeTab === "downloads" && <DownloadedGrid />}
     </div>
   );
 }

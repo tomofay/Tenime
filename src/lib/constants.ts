@@ -1,5 +1,11 @@
 export const JIKAN_BASE_URL = "https://api.jikan.moe/v4";
-export const OTAKUDESU_BASE_URL = "https://otakudesu.cloud";
+export const OTAKUDESU_BASE_URL = process.env.OTAKUDESU_URL || "https://otakudesu.blog";
+
+export const OTAKUDESU_FALLBACK_URLS = [
+  "https://otakudesu.blog",
+  "https://otakudesu.cloud",
+  "https://otakudesu.ink",
+];
 
 export const SITE_NAME = "Tenime";
 export const SITE_TAGLINE = "Streaming Anime Subtitle Indonesia";

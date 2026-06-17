@@ -16,6 +16,8 @@ export async function GET(
   const patterns = [
     `${malId}-ep${episodeNumber}-${quality}.mp4`,
     `${malId}-ep${String(Number(episodeNumber)).padStart(2, "0")}-${quality}.mp4`,
+    `${malId}-ep${episodeNumber}-${quality}.mkv`,
+    `${malId}-ep${String(Number(episodeNumber)).padStart(2, "0")}-${quality}.mkv`,
   ];
 
   for (const pattern of patterns) {
@@ -23,10 +25,13 @@ export async function GET(
     if (existsSync(filePath)) {
       const stat = statSync(filePath);
       const stream = createReadStream(filePath);
+      const isMkv = pattern.endsWith(".mkv");
+      const isMp4 = pattern.endsWith(".mp4");
+      const contentType = isMkv ? "video/x-matroska" : isMp4 ? "video/mp4" : "video/mp4";
 
       return new Response(stream as unknown as ReadableStream, {
         headers: {
-          "Content-Type": "video/mp4",
+          "Content-Type": contentType,
           "Content-Length": String(stat.size),
           "Accept-Ranges": "bytes",
           "Cache-Control": "public, max-age=86400",

@@ -4,6 +4,8 @@ import { Providers } from "@/components/layout/Providers";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PwaRegistration } from "@/components/layout/PwaRegistration";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,8 +22,7 @@ export const metadata: Metadata = {
     "Nonton anime subtitle Indonesia gratis, tanpa iklan pop-up. UI modern, ringan, dan cepat.",
   openGraph: {
     title: "Tenime — Streaming Anime Sub Indo",
-    description:
-      "Nonton anime subtitle Indonesia gratis, tanpa iklan pop-up.",
+    description: "Nonton anime subtitle Indonesia gratis, tanpa iklan pop-up.",
     type: "website",
   },
   manifest: "/manifest.json",
@@ -54,6 +55,8 @@ export default function RootLayout({
           <Navbar />
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />
+          <CommandPalette />
+          <Toaster richColors position="top-right" />
         </Providers>
       </body>
     </html>

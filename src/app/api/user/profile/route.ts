@@ -1,16 +1,21 @@
-import { writeFile, mkdir, readFile, access } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { withRateLimit } from "@/lib/api-utils";
 
 const AVATARS_DIR = path.join(process.cwd(), "uploads", "avatars");
+const PROFILE_LIMIT = { windowMs: 60_000, maxRequests: 10 };
 
 async function ensureDir() {
   await mkdir(AVATARS_DIR, { recursive: true });
 }
 
 export async function POST(request: Request) {
+  const rateLimit = withRateLimit(request, PROFILE_LIMIT);
+  if (rateLimit) return rateLimit;
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
