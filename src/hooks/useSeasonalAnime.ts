@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSeasonNow } from "@/lib/jikan";
+import type { Anime } from "@/types/anime";
 
 export function useSeasonalAnime() {
-  return useQuery({
+  return useQuery<Anime[]>({
     queryKey: ["seasonal-anime"],
-    queryFn: () => getSeasonNow(12),
-    staleTime: 5 * 60 * 1000,
+    queryFn: () => fetch("/api/anime/home?type=seasonal").then((r) => r.json().then((d: { data: Anime[] }) => d.data)),
+    staleTime: 10 * 60 * 1000,
   });
 }

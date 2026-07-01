@@ -73,8 +73,8 @@ export function AnimeGrid() {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-muted text-sm">Gagal memuat anime.</p>
-        <p className="text-muted/60 text-xs mt-1">Coba lagi nanti.</p>
+        <p className="text-muted text-sm">Jikan API sedang error (503/504).</p>
+        <p className="text-muted/60 text-xs mt-1">Server MyAnimeList sedang sibuk — coba lagi beberapa saat lagi.</p>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export function AnimeGrid() {
   }
 
   return (
-    <InfiniteScroll hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage}>
+    <InfiniteScroll hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} isError={isError}>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {allAnime.map((anime) => <AnimeCard key={anime.mal_id} anime={anime} size="sm" />)}
       </div>

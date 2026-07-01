@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSchedules } from "@/lib/jikan";
+import type { Anime, Pagination } from "@/types/anime";
+
+interface ScheduleResponse {
+  data: Anime[];
+  pagination: Pagination;
+}
 
 const DAYS = [
   { key: "monday", label: "Senin" },
@@ -12,9 +17,9 @@ const DAYS = [
 ] as const;
 
 export function useSchedule(day: string) {
-  return useQuery({
+  return useQuery<ScheduleResponse>({
     queryKey: ["schedule", day],
-    queryFn: () => getSchedules(day, 1, 20),
+    queryFn: () => fetch(`/api/anime/schedule?day=${day}`).then((r) => r.json()),
     staleTime: 30 * 60 * 1000,
     enabled: !!day,
   });

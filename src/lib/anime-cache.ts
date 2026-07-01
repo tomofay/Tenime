@@ -45,9 +45,7 @@ export async function cacheAnimeData(malId: number, data: unknown): Promise<void
 export async function getCachedAnimeData(malId: number): Promise<unknown | null> {
   const cached = await db.cachedAnime.findUnique({ where: { malId } });
   if (!cached) return null;
-  const ageHrs = (Date.now() - cached.updatedAt.getTime()) / (1000 * 60 * 60);
-  if (ageHrs > 72) return null;
-
+  // Permanent cache — never expire
   // Replace poster URL with local cache if available
   const data = cached.data as Record<string, unknown>;
   const localPoster = `/cache/posters/anime-${malId}.webp`;

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTopAnime } from "@/lib/jikan";
+import type { Anime } from "@/types/anime";
 
 export function useTrendingAnime() {
-  return useQuery({
+  return useQuery<Anime[]>({
     queryKey: ["trending-anime"],
-    queryFn: () => getTopAnime("airing", 12),
-    staleTime: 5 * 60 * 1000,
+    queryFn: () => fetch("/api/anime/home?type=trending").then((r) => r.json().then((d: { data: Anime[] }) => d.data)),
+    staleTime: 10 * 60 * 1000,
   });
 }

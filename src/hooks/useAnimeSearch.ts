@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { searchAnimeAdvanced, getSeasonalAnime } from "@/lib/jikan";
+import { getSeasonalAnime } from "@/lib/jikan";
 import { useFilterStore } from "@/store/useFilterStore";
 
 export function useAnimeSearch() {
@@ -20,7 +20,7 @@ export function useAnimeSearch() {
     queryKey: ["anime-search", query, type, status, genres, sort, sortDirection, season, year],
     queryFn: ({ pageParam = 1 }) => {
       if (isSeasonal) {
-        return getSeasonalAnime(Number(year), season, 24 * pageParam).then((data) => ({
+        return getSeasonalAnime(Number(year), season).then((data) => ({
           data,
           pagination: {
             last_visible_page: 1,
@@ -30,15 +30,22 @@ export function useAnimeSearch() {
           },
         }));
       }
-      return searchAnimeAdvanced({
-        query: query || undefined,
-        type: type || undefined,
-        status: status || undefined,
-        genres: genres.length > 0 ? genres : undefined,
-        order_by: sort || undefined,
-        sort: sort ? sortDirection : undefined,
-        page: pageParam,
-        limit: 24,
+
+      // Use local proxy — falls back to DB cache when Jikan is down
+      const sp = new URLSearchParams();
+      if (query) sp.set("q", query);
+      if (type) sp.set("type", type);
+      if (status) sp.set("status", status);
+      if (genres.length > 0) sp.set("genres", genres.join(","));
+      if (sort) {
+        sp.set("order_by", sort);
+        sp.set("sort", sortDirection);
+      }
+      sp.set("page", String(pageParam));
+
+      return fetch(`/api/anime/search?${sp.toString()}`).then((r) => {
+        if (!r.ok) throw new Error(`Search failed: ${r.status}`);
+        return r.json();
       });
     },
     initialPageParam: 1,
@@ -50,5 +57,7 @@ export function useAnimeSearch() {
       return undefined;
     },
     staleTime: 2 * 60 * 1000,
+    retry: 1,
+    retryDelay: 3000,
   });
 }

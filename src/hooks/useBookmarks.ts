@@ -26,6 +26,7 @@ export function useToggleBookmark() {
       posterUrl?: string;
       score?: number;
       type?: string;
+      status?: string;
     }) => {
       const existing = bookmarks?.find((b) => b.malId === item.malId);
       if (existing) {

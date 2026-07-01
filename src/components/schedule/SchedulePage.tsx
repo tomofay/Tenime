@@ -57,7 +57,7 @@ export function SchedulePage() {
 
       {data && data.data.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {data.data.filter((a, i, arr) => arr.findIndex((x) => x.mal_id === a.mal_id) === i).map((anime) => (
+          {data.data.filter((a: { mal_id: number }, i: number, arr: { mal_id: number }[]) => arr.findIndex((x) => x.mal_id === a.mal_id) === i).map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime} size="sm" />
           ))}
         </div>

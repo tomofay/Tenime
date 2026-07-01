@@ -11,6 +11,7 @@ interface BookmarkButtonProps {
   posterUrl?: string;
   score?: number;
   type?: string;
+  status?: string;
   size?: "sm" | "md";
 }
 
@@ -20,6 +21,7 @@ export function BookmarkButton({
   posterUrl,
   score,
   type,
+  status,
   size = "md",
 }: BookmarkButtonProps) {
   const { data: session } = useSession();
@@ -35,7 +37,7 @@ export function BookmarkButton({
       return;
     }
 
-    toggleBookmark({ malId, title, posterUrl, score, type });
+    toggleBookmark({ malId, title, posterUrl, score, type, status });
   }
 
   return (

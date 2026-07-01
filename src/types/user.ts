@@ -13,6 +13,7 @@ export interface Bookmark {
   posterUrl: string | null;
   score: number | null;
   type: string | null;
+  status: string | null;
   createdAt: string;
 }
 

@@ -946,6 +946,7 @@ export const BookmarkScalarFieldEnum = {
   posterUrl: 'posterUrl',
   score: 'score',
   type: 'type',
+  status: 'status',
   createdAt: 'createdAt'
 } as const
 
@@ -1053,7 +1054,8 @@ export const BookmarkOrderByRelevanceFieldEnum = {
   userId: 'userId',
   title: 'title',
   posterUrl: 'posterUrl',
-  type: 'type'
+  type: 'type',
+  status: 'status'
 } as const
 
 export type BookmarkOrderByRelevanceFieldEnum = (typeof BookmarkOrderByRelevanceFieldEnum)[keyof typeof BookmarkOrderByRelevanceFieldEnum]

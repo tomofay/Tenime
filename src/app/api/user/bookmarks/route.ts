@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const { malId, title, posterUrl, score, type } = parsed.data;
+  const { malId, title, posterUrl, score, type, status } = parsed.data;
 
   const existing = await db.bookmark.findUnique({
     where: { userId_malId: { userId: session.user.id, malId } },
@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       posterUrl,
       score,
       type,
+      status,
     },
   });
 

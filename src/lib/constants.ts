@@ -1,4 +1,4 @@
-export const JIKAN_BASE_URL = "https://api.jikan.moe/v4";
+export const JIKAN_BASE_URL = process.env.JIKAN_BASE_URL || "https://api.jikan.moe/v4";
 export const OTAKUDESU_BASE_URL = process.env.OTAKUDESU_URL || "https://otakudesu.blog";
 
 export const OTAKUDESU_FALLBACK_URLS = [

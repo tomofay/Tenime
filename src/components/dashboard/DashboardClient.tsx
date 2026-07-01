@@ -4,9 +4,11 @@ import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useWatchHistory } from "@/hooks/useWatchHistory";
+import { useDownloadCount } from "@/hooks/useDownloadCount";
 import { BookmarkGrid } from "@/components/dashboard/BookmarkGrid";
 import { HistoryTimeline } from "@/components/dashboard/HistoryTimeline";
 import { DownloadedGrid } from "@/components/dashboard/DownloadedGrid";
+import { ManualUploadForm } from "@/components/dashboard/ManualUploadForm";
 import { Bookmark, Clock, LogOut, Settings, Download } from "lucide-react";
 import Link from "next/link";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -18,6 +20,7 @@ export function DashboardClient() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("bookmarks");
   const { data: bookmarks } = useBookmarks();
   const { data: history } = useWatchHistory();
+  const { data: downloadCount } = useDownloadCount();
 
   const tabs: { key: DashboardTab; icon: typeof Bookmark; label: string }[] = [
     { key: "bookmarks", icon: Bookmark, label: "Watchlist" },
@@ -77,6 +80,11 @@ export function DashboardClient() {
                   {history.length}
                 </span>
               )}
+              {tab.key === "downloads" && downloadCount !== undefined && (
+                <span className="rounded-full bg-surface px-1.5 py-0.5 text-xs">
+                  {downloadCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -84,7 +92,12 @@ export function DashboardClient() {
 
       {activeTab === "bookmarks" && <BookmarkGrid bookmarks={bookmarks ?? []} />}
       {activeTab === "history" && <HistoryTimeline history={history ?? []} />}
-      {activeTab === "downloads" && <DownloadedGrid />}
+      {activeTab === "downloads" && (
+        <>
+          <ManualUploadForm />
+          <DownloadedGrid />
+        </>
+      )}
     </div>
   );
 }

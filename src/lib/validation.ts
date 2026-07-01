@@ -12,6 +12,7 @@ export const bookmarkCreateSchema = z.object({
   posterUrl: z.string().url().optional().nullable(),
   score: z.number().min(0).max(10).optional().nullable(),
   type: z.string().optional().nullable(),
+  status: z.string().optional().nullable(),
 });
 
 export const bookmarkDeleteSchema = z.object({

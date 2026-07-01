@@ -65,7 +65,7 @@ export function EditProfileForm() {
           <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <Camera className="h-6 w-6 text-white" />
           </div>
-          <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
+          <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} />
         </label>
         <p className="text-xs text-muted">Klik untuk ganti foto (PNG/JPEG/WebP/GIF, max 5MB)</p>
       </div>
