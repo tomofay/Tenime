@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Clock, Calendar, CheckCircle2, Download } from "lucide-react";
+import { Star, Clock, Calendar, CheckCircle2 } from "lucide-react";
 import type { Anime } from "@/types/anime";
 import { BookmarkButton } from "@/components/ui/BookmarkButton";
 
@@ -11,10 +11,9 @@ interface DetailHeroProps {
   anime: Anime;
   isCached?: boolean;
   isStale?: boolean;
-  downloadStatus?: { downloaded: boolean };
 }
 
-export function DetailHero({ anime, isCached, isStale, downloadStatus }: DetailHeroProps) {
+export function DetailHero({ anime, isCached, isStale }: DetailHeroProps) {
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
   const synopsisText = anime.synopsis ?? "";
   const isLongSynopsis = synopsisText.length > 300;
@@ -71,7 +70,6 @@ export function DetailHero({ anime, isCached, isStale, downloadStatus }: DetailH
               <BookmarkButton malId={anime.mal_id} title={anime.title} posterUrl={anime.images?.webp?.large_image_url} score={anime.score ?? undefined} type={anime.type} status={anime.status?.toLowerCase().includes("complete") ? "completed" : "ongoing"} size="sm" />
               {isCached && <span className="inline-flex items-center gap-1 rounded bg-green-500/10 border border-green-500/20 px-2 py-0.5 text-xs text-green-400"><CheckCircle2 className="h-3 w-3" />Tersimpan offline</span>}
               {isStale && <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-xs text-amber-400">Data lama</span>}
-              {downloadStatus?.downloaded && <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 text-xs text-blue-400"><Download className="h-3 w-3" />Terdownload</span>}
             </div>
 
             {synopsisText && (

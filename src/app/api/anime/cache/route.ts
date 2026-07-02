@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getAnimeFull } from "@/lib/jikan";
-import { db } from "@/lib/db";
 import { cacheAnimeData } from "@/lib/anime-cache";
 import { cacheAnimeSchema } from "@/lib/validation";
 import { withRateLimit } from "@/lib/api-utils";
@@ -26,10 +25,6 @@ export async function POST(request: Request) {
         const anime = await getAnimeFull(malId);
         await cacheAnimeData(malId, anime);
 
-        const download = await db.downloadedFile.findFirst({
-          where: { malId }, orderBy: { createdAt: "desc" },
-        });
-
         results[String(malId)] = {
           title: anime.title,
           episodes: anime.episodes,
@@ -38,7 +33,6 @@ export async function POST(request: Request) {
           type: anime.type,
           year: anime.year,
           poster: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url || null,
-          downloaded: !!download,
         };
       } catch {
         results[String(malId)] = { error: "failed" };

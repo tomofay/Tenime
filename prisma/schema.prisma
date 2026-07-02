@@ -9,52 +9,55 @@ datasource db {
 
 model User {
   id           String         @id @default(cuid())
-  username     String         @unique
-  email        String         @unique
+  username     String         @unique(map: "User_username_key")
+  email        String         @unique(map: "User_email_key")
   passwordHash String
   avatarUrl    String?
-  bio          String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  bio          String?
   bookmarks    Bookmark[]
-  watchHistory WatchHistory[]
   comments     Comment[]
+  watchHistory WatchHistory[]
+
+  @@map("user")
 }
 
 model Comment {
   id            String   @id @default(cuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   malId         Int
   episodeNumber Int
   body          String   @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([malId, episodeNumber])
-  @@index([userId])
+  @@index([malId, episodeNumber], map: "Comment_malId_episodeNumber_idx")
+  @@index([userId], map: "Comment_userId_idx")
+  @@map("comment")
 }
 
 model Bookmark {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   malId     Int
   title     String
   posterUrl String?
   score     Float?
   type      String?
-  status    String?
   createdAt DateTime @default(now())
+  status    String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, malId])
-  @@index([userId])
+  @@unique([userId, malId], map: "Bookmark_userId_malId_key")
+  @@index([userId], map: "Bookmark_userId_idx")
+  @@map("bookmark")
 }
 
 model WatchHistory {
   id              String   @id @default(cuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   malId           Int
   animeTitle      String
   posterUrl       String?
@@ -62,33 +65,21 @@ model WatchHistory {
   episodeTitle    String?
   progressPercent Int      @default(0)
   watchedAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, malId, episodeNumber])
-  @@index([userId])
+  @@unique([userId, malId, episodeNumber], map: "WatchHistory_userId_malId_episodeNumber_key")
+  @@index([userId], map: "WatchHistory_userId_idx")
+  @@map("watchhistory")
 }
 
 model AnimeSlugMapping {
   malId        Int      @id
-  slug         String   @unique
+  slug         String   @unique(map: "AnimeSlugMapping_slug_key")
   title        String
   lastVerified DateTime @default(now())
   createdAt    DateTime @default(now())
-}
 
-model DownloadedFile {
-  id              String   @id @default(cuid())
-  malId           Int
-  animeTitle      String
-  episodeNumber   Int
-  quality         String
-  fileName        String
-  filePath        String
-  sizeBytes       BigInt?
-  source          String   @default("manual")
-  createdAt       DateTime @default(now())
-
-  @@unique([malId, episodeNumber, quality])
-  @@index([malId])
+  @@map("animeslugmapping")
 }
 
 model CachedAnime {
@@ -96,4 +87,6 @@ model CachedAnime {
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("cachedanime")
 }

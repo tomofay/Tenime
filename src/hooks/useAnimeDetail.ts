@@ -5,7 +5,6 @@ interface CachedAnimeResponse {
   data: Anime;
   cached: boolean;
   stale?: boolean;
-  downloadStatus: { downloaded: boolean; quality?: string; filePath?: string };
 }
 
 export function useAnimeDetail(malId: number) {

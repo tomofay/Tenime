@@ -3,7 +3,7 @@
 import { useTrendingAnime } from "@/hooks/useTrendingAnime";
 import { useSeasonalAnime } from "@/hooks/useSeasonalAnime";
 import { usePopularAnime } from "@/hooks/usePopularAnime";
-import { useOfflineMode, useOfflineAnimeList } from "@/hooks/useOfflineAnime";
+import { useOfflineMode } from "@/hooks/useOfflineMode";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Section } from "@/components/home/Section";
@@ -11,7 +11,6 @@ import { AnimeCard } from "@/components/home/AnimeCard";
 import { ContinueWatchingSection } from "@/components/home/ContinueWatchingSection";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { toAnimeCardData } from "@/lib/anime-card-data";
 import { WifiOff } from "lucide-react";
 
 function dedupByMalId<T extends { mal_id: number }>(arr: T[]): T[] {
@@ -24,10 +23,8 @@ export function HomePageClient() {
   const seasonal = useSeasonalAnime();
   const popular = usePopularAnime();
   const { data: isOffline } = useOfflineMode();
-  const { data: offlineList } = useOfflineAnimeList();
   const { data: continueWatching } = useContinueWatching();
 
-  const downloadedIds = new Set(offlineList?.results?.filter((o) => o.downloaded).map((o) => o.malId) ?? []);
   const seasonalAnimeList = dedupByMalId(seasonal.data ?? []).slice(0, 8);
 
   return (
@@ -47,21 +44,13 @@ export function HomePageClient() {
         <ContinueWatchingSection entries={continueWatching} />
       )}
 
-      {offlineList && offlineList.count > 0 && (
-        <Section title={`Tersimpan Lokal (${offlineList.count})`} variant="horizontal" seeAllHref="/browse">
-          {offlineList.results.map((item) => (
-            <AnimeCard key={item.malId} anime={toAnimeCardData(item)} isDownloaded={item.downloaded} />
-          ))}
-        </Section>
-      )}
-
       <Section title="Trending Sekarang" variant="horizontal" seeAllHref="/browse?sort=score&dir=desc">
         {trending.isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
           : trending.isError || !trending.data
           ? <EmptyState message="Gagal memuat trending anime." submessage="Coba refresh halaman." />
           : dedupByMalId(trending.data).slice(0, 12).map((anime, i) => (
-              <AnimeCard key={`trending-${anime.mal_id}`} anime={anime} rank={i + 1} isDownloaded={downloadedIds.has(anime.mal_id)} />
+              <AnimeCard key={`trending-${anime.mal_id}`} anime={anime} rank={i + 1} />
             ))}
       </Section>
 
@@ -71,7 +60,7 @@ export function HomePageClient() {
           : seasonal.isError || !seasonal.data
           ? <EmptyState message="Gagal memuat anime musim ini." submessage="Coba refresh halaman." />
           : dedupByMalId(seasonal.data).slice(0, 12).map((anime) => (
-              <AnimeCard key={`seasonal-${anime.mal_id}`} anime={anime} size="sm" isDownloaded={downloadedIds.has(anime.mal_id)} />
+              <AnimeCard key={`seasonal-${anime.mal_id}`} anime={anime} size="sm" />
             ))}
       </Section>
 
@@ -81,7 +70,7 @@ export function HomePageClient() {
           : popular.isError || !popular.data
           ? <EmptyState message="Gagal memuat anime populer." submessage="Coba refresh halaman." />
           : dedupByMalId(popular.data).slice(0, 12).map((anime) => (
-              <AnimeCard key={`popular-${anime.mal_id}`} anime={anime} isDownloaded={downloadedIds.has(anime.mal_id)} />
+              <AnimeCard key={`popular-${anime.mal_id}`} anime={anime} />
             ))}
       </Section>
     </div>

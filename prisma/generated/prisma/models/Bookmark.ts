@@ -44,8 +44,8 @@ export type BookmarkMinAggregateOutputType = {
   posterUrl: string | null
   score: number | null
   type: string | null
-  status: string | null
   createdAt: Date | null
+  status: string | null
 }
 
 export type BookmarkMaxAggregateOutputType = {
@@ -56,8 +56,8 @@ export type BookmarkMaxAggregateOutputType = {
   posterUrl: string | null
   score: number | null
   type: string | null
-  status: string | null
   createdAt: Date | null
+  status: string | null
 }
 
 export type BookmarkCountAggregateOutputType = {
@@ -68,8 +68,8 @@ export type BookmarkCountAggregateOutputType = {
   posterUrl: number
   score: number
   type: number
-  status: number
   createdAt: number
+  status: number
   _all: number
 }
 
@@ -92,8 +92,8 @@ export type BookmarkMinAggregateInputType = {
   posterUrl?: true
   score?: true
   type?: true
-  status?: true
   createdAt?: true
+  status?: true
 }
 
 export type BookmarkMaxAggregateInputType = {
@@ -104,8 +104,8 @@ export type BookmarkMaxAggregateInputType = {
   posterUrl?: true
   score?: true
   type?: true
-  status?: true
   createdAt?: true
+  status?: true
 }
 
 export type BookmarkCountAggregateInputType = {
@@ -116,8 +116,8 @@ export type BookmarkCountAggregateInputType = {
   posterUrl?: true
   score?: true
   type?: true
-  status?: true
   createdAt?: true
+  status?: true
   _all?: true
 }
 
@@ -215,8 +215,8 @@ export type BookmarkGroupByOutputType = {
   posterUrl: string | null
   score: number | null
   type: string | null
-  status: string | null
   createdAt: Date
+  status: string | null
   _count: BookmarkCountAggregateOutputType | null
   _avg: BookmarkAvgAggregateOutputType | null
   _sum: BookmarkSumAggregateOutputType | null
@@ -250,8 +250,8 @@ export type BookmarkWhereInput = {
   posterUrl?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   score?: Prisma.FloatNullableFilter<"Bookmark"> | number | null
   type?: Prisma.StringNullableFilter<"Bookmark"> | string | null
-  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bookmark"> | Date | string
+  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -263,8 +263,8 @@ export type BookmarkOrderByWithRelationInput = {
   posterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrderInput | Prisma.SortOrder
-  status?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.BookmarkOrderByRelevanceInput
 }
@@ -281,8 +281,8 @@ export type BookmarkWhereUniqueInput = Prisma.AtLeast<{
   posterUrl?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   score?: Prisma.FloatNullableFilter<"Bookmark"> | number | null
   type?: Prisma.StringNullableFilter<"Bookmark"> | string | null
-  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bookmark"> | Date | string
+  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId_malId">
 
@@ -294,8 +294,8 @@ export type BookmarkOrderByWithAggregationInput = {
   posterUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrderInput | Prisma.SortOrder
-  status?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.BookmarkCountOrderByAggregateInput
   _avg?: Prisma.BookmarkAvgOrderByAggregateInput
   _max?: Prisma.BookmarkMaxOrderByAggregateInput
@@ -314,8 +314,8 @@ export type BookmarkScalarWhereWithAggregatesInput = {
   posterUrl?: Prisma.StringNullableWithAggregatesFilter<"Bookmark"> | string | null
   score?: Prisma.FloatNullableWithAggregatesFilter<"Bookmark"> | number | null
   type?: Prisma.StringNullableWithAggregatesFilter<"Bookmark"> | string | null
-  status?: Prisma.StringNullableWithAggregatesFilter<"Bookmark"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Bookmark"> | Date | string
+  status?: Prisma.StringNullableWithAggregatesFilter<"Bookmark"> | string | null
 }
 
 export type BookmarkCreateInput = {
@@ -325,8 +325,8 @@ export type BookmarkCreateInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
   user: Prisma.UserCreateNestedOneWithoutBookmarksInput
 }
 
@@ -338,8 +338,8 @@ export type BookmarkUncheckedCreateInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
 }
 
 export type BookmarkUpdateInput = {
@@ -349,8 +349,8 @@ export type BookmarkUpdateInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutBookmarksNestedInput
 }
 
@@ -362,8 +362,8 @@ export type BookmarkUncheckedUpdateInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BookmarkCreateManyInput = {
@@ -374,8 +374,8 @@ export type BookmarkCreateManyInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
 }
 
 export type BookmarkUpdateManyMutationInput = {
@@ -385,8 +385,8 @@ export type BookmarkUpdateManyMutationInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BookmarkUncheckedUpdateManyInput = {
@@ -397,8 +397,8 @@ export type BookmarkUncheckedUpdateManyInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BookmarkListRelationFilter = {
@@ -430,8 +430,8 @@ export type BookmarkCountOrderByAggregateInput = {
   posterUrl?: Prisma.SortOrder
   score?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
 }
 
 export type BookmarkAvgOrderByAggregateInput = {
@@ -447,8 +447,8 @@ export type BookmarkMaxOrderByAggregateInput = {
   posterUrl?: Prisma.SortOrder
   score?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
 }
 
 export type BookmarkMinOrderByAggregateInput = {
@@ -459,8 +459,8 @@ export type BookmarkMinOrderByAggregateInput = {
   posterUrl?: Prisma.SortOrder
   score?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  status?: Prisma.SortOrder
 }
 
 export type BookmarkSumOrderByAggregateInput = {
@@ -525,8 +525,8 @@ export type BookmarkCreateWithoutUserInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
 }
 
 export type BookmarkUncheckedCreateWithoutUserInput = {
@@ -536,8 +536,8 @@ export type BookmarkUncheckedCreateWithoutUserInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
 }
 
 export type BookmarkCreateOrConnectWithoutUserInput = {
@@ -577,8 +577,8 @@ export type BookmarkScalarWhereInput = {
   posterUrl?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   score?: Prisma.FloatNullableFilter<"Bookmark"> | number | null
   type?: Prisma.StringNullableFilter<"Bookmark"> | string | null
-  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Bookmark"> | Date | string
+  status?: Prisma.StringNullableFilter<"Bookmark"> | string | null
 }
 
 export type BookmarkCreateManyUserInput = {
@@ -588,8 +588,8 @@ export type BookmarkCreateManyUserInput = {
   posterUrl?: string | null
   score?: number | null
   type?: string | null
-  status?: string | null
   createdAt?: Date | string
+  status?: string | null
 }
 
 export type BookmarkUpdateWithoutUserInput = {
@@ -599,8 +599,8 @@ export type BookmarkUpdateWithoutUserInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BookmarkUncheckedUpdateWithoutUserInput = {
@@ -610,8 +610,8 @@ export type BookmarkUncheckedUpdateWithoutUserInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BookmarkUncheckedUpdateManyWithoutUserInput = {
@@ -621,8 +621,8 @@ export type BookmarkUncheckedUpdateManyWithoutUserInput = {
   posterUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -635,8 +635,8 @@ export type BookmarkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   posterUrl?: boolean
   score?: boolean
   type?: boolean
-  status?: boolean
   createdAt?: boolean
+  status?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookmark"]>
 
@@ -650,11 +650,11 @@ export type BookmarkSelectScalar = {
   posterUrl?: boolean
   score?: boolean
   type?: boolean
-  status?: boolean
   createdAt?: boolean
+  status?: boolean
 }
 
-export type BookmarkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "malId" | "title" | "posterUrl" | "score" | "type" | "status" | "createdAt", ExtArgs["result"]["bookmark"]>
+export type BookmarkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "malId" | "title" | "posterUrl" | "score" | "type" | "createdAt" | "status", ExtArgs["result"]["bookmark"]>
 export type BookmarkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -672,8 +672,8 @@ export type $BookmarkPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     posterUrl: string | null
     score: number | null
     type: string | null
-    status: string | null
     createdAt: Date
+    status: string | null
   }, ExtArgs["result"]["bookmark"]>
   composites: {}
 }
@@ -1051,8 +1051,8 @@ export interface BookmarkFieldRefs {
   readonly posterUrl: Prisma.FieldRef<"Bookmark", 'String'>
   readonly score: Prisma.FieldRef<"Bookmark", 'Float'>
   readonly type: Prisma.FieldRef<"Bookmark", 'String'>
-  readonly status: Prisma.FieldRef<"Bookmark", 'String'>
   readonly createdAt: Prisma.FieldRef<"Bookmark", 'DateTime'>
+  readonly status: Prisma.FieldRef<"Bookmark", 'String'>
 }
     
 

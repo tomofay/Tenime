@@ -24,7 +24,6 @@ export function AnimeDetailClient({ malId }: AnimeDetailClientProps) {
   const anime = response?.data;
   const isCached = response?.cached ?? false;
   const isStale = response?.stale ?? false;
-  const downloadStatus = response?.downloadStatus;
 
   if (animeLoading) {
     return (
@@ -45,7 +44,7 @@ export function AnimeDetailClient({ malId }: AnimeDetailClientProps) {
 
   return (
     <div>
-      <DetailHero anime={anime} isCached={isCached} isStale={isStale} downloadStatus={downloadStatus} />
+      <DetailHero anime={anime} isCached={isCached} isStale={isStale} />
       <div className="max-w-7xl mx-auto px-4 pb-12">
         <div className="flex items-center justify-between">
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />

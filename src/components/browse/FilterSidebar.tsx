@@ -71,7 +71,6 @@ export function FilterSidebar() {
   const sort = useFilterStore((s) => s.sort);
   const sortDirection = useFilterStore((s) => s.sortDirection);
   const seasonValue = useFilterStore((s) => s.seasonValue);
-  const downloadedOnly = useFilterStore((s) => s.downloadedOnly);
 
   const setType = useFilterStore((s) => s.setType);
   const setStatus = useFilterStore((s) => s.setStatus);
@@ -79,7 +78,6 @@ export function FilterSidebar() {
   const setSort = useFilterStore((s) => s.setSort);
   const setSortDirection = useFilterStore((s) => s.setSortDirection);
   const setSeasonValue = useFilterStore((s) => s.setSeasonValue);
-  const setDownloadedOnly = useFilterStore((s) => s.setDownloadedOnly);
   const resetFilters = useFilterStore((s) => s.resetFilters);
 
   return (
@@ -140,15 +138,6 @@ export function FilterSidebar() {
           ))}
         </div>
       </div>
-
-      {/* Downloaded Only toggle */}
-      <label className="flex items-center gap-3 cursor-pointer rounded-lg border border-border bg-surface p-2.5 hover:border-accent/30 transition-colors">
-        <div className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${downloadedOnly ? "bg-green-500" : "bg-muted/30"}`}>
-          <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${downloadedOnly ? "left-[18px]" : "left-0.5"}`} />
-        </div>
-        <span className="text-xs text-muted">{downloadedOnly ? "Downloaded only" : "Tersimpan di server"}</span>
-        <input type="checkbox" checked={downloadedOnly} onChange={(e) => setDownloadedOnly(e.target.checked)} className="sr-only" />
-      </label>
 
       {/* Season */}
       <div>

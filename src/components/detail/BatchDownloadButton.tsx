@@ -11,44 +11,31 @@ interface BatchDownloadButtonProps {
 
 export function BatchDownloadButton({ malId, animeTitle, totalEpisodes }: BatchDownloadButtonProps) {
   const [status, setStatus] = useState<"idle" | "downloading" | "done">("idle");
-  const [progress, setProgress] = useState({ current: 0, total: 0, failed: 0, skipped: 0 });
+  const [progress, setProgress] = useState({ current: 0, total: 0, failed: 0 });
 
-  async function downloadEpisode(ep: number): Promise<"ok" | "skip" | "fail"> {
-    // Quick local check — no rate limit concern
-    try {
-      const checkRes = await fetch(`/api/download?malId=${malId}&ep=${ep}`);
-      if (checkRes.status === 429) { await new Promise((r) => setTimeout(r, 5000)); return "fail"; }
-      const checkData = await checkRes.json();
-      if (checkData.downloaded) { setProgress((p) => ({ ...p, skipped: p.skipped + 1 })); return "skip"; }
-    } catch { /* lanjut */ }
-
-    // Get stream → mirrors
+  async function downloadEpisode(ep: number, quality = "720p"): Promise<"ok" | "fail"> {
     try {
       const streamRes = await fetch(`/api/stream?malId=${malId}&ep=${ep}&title=${encodeURIComponent(animeTitle)}`);
       if (!streamRes.ok) return "fail";
       const streamData = await streamRes.json();
       const downloadGroups = streamData.downloadGroups || [];
-      const mirrors = streamData.mirrors || [];
 
-      const body: Record<string, unknown> = { malId, episodeNumber: ep, animeTitle, quality: "720p" };
-      if (downloadGroups.length > 0) {
-        body.downloadGroups = downloadGroups;
-      } else if (mirrors.length > 0) {
-        body.mirrors = mirrors;
-      } else {
-        return "fail";
-      }
+      if (downloadGroups.length === 0) return "fail";
 
       const dlRes = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ malId, episodeNumber: ep, animeTitle, quality, downloadGroups }),
       });
 
       if (dlRes.status === 429) { await new Promise((r) => setTimeout(r, 10000)); return "fail"; }
-
       const dlData = await dlRes.json();
-      return dlData.success ? "ok" : "fail";
+
+      if (dlData.success && dlData.streamUrl) {
+        window.open(dlData.streamUrl, "_blank");
+        return "ok";
+      }
+      return "fail";
     } catch {
       return "fail";
     }
@@ -57,7 +44,7 @@ export function BatchDownloadButton({ malId, animeTitle, totalEpisodes }: BatchD
   async function downloadAll() {
     if (status === "downloading" || totalEpisodes <= 0) return;
     setStatus("downloading");
-    setProgress({ current: 0, total: totalEpisodes, failed: 0, skipped: 0 });
+    setProgress({ current: 0, total: totalEpisodes, failed: 0 });
 
     let failed = 0;
     for (let ep = 1; ep <= totalEpisodes; ep++) {
@@ -65,7 +52,6 @@ export function BatchDownloadButton({ malId, animeTitle, totalEpisodes }: BatchD
       const result = await downloadEpisode(ep);
       if (result === "fail") failed++;
       setProgress((p) => ({ ...p, failed }));
-      // Delay between episodes: 4s normal, 15s after fail
       if (ep < totalEpisodes) {
         await new Promise((r) => setTimeout(r, result === "fail" ? 15000 : 4000));
       }
@@ -73,7 +59,7 @@ export function BatchDownloadButton({ malId, animeTitle, totalEpisodes }: BatchD
     setStatus("done");
   }
 
-  const succeed = Math.max(0, progress.total - progress.failed - progress.skipped);
+  const succeed = Math.max(0, progress.total - progress.failed);
 
   if (totalEpisodes <= 0) return null;
 
@@ -88,16 +74,16 @@ export function BatchDownloadButton({ malId, animeTitle, totalEpisodes }: BatchD
       {status === "downloading" && (
         <div className="inline-flex items-center gap-2 rounded-lg bg-accent/10 border border-accent/20 px-4 py-2">
           <Loader2 className="h-4 w-4 text-accent animate-spin" />
-          <span className="text-sm text-accent">EP {progress.current}/{progress.total}{progress.skipped > 0 && ` (${progress.skipped} skip)`}{progress.failed > 0 && ` (${progress.failed} gagal)`}</span>
+          <span className="text-sm text-accent">EP {progress.current}/{progress.total}{progress.failed > 0 && ` (${progress.failed} gagal)`}</span>
         </div>
       )}
       {status === "done" && (
         <div className="flex items-center gap-2 flex-wrap">
           <div className="inline-flex items-center gap-2 rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-2">
             <CheckCircle2 className="h-4 w-4 text-green-400" />
-            <span className="text-sm text-green-400">{succeed} berhasil{progress.skipped > 0 && `, ${progress.skipped} skip`}{progress.failed > 0 && `, ${progress.failed} gagal`}</span>
+            <span className="text-sm text-green-400">{succeed} berhasil{progress.failed > 0 && `, ${progress.failed} gagal`}</span>
           </div>
-          <button onClick={() => { setStatus("idle"); setProgress({ current: 0, total: 0, failed: 0, skipped: 0 }); }} className="text-sm text-accent hover:underline">Ulangi</button>
+          <button onClick={() => { setStatus("idle"); setProgress({ current: 0, total: 0, failed: 0 }); }} className="text-sm text-accent hover:underline">Ulangi</button>
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import type { WatchHistory } from "@/types/user";
 
 async function fetchHistory(): Promise<WatchHistory[]> {
@@ -8,9 +9,11 @@ async function fetchHistory(): Promise<WatchHistory[]> {
 }
 
 export function useWatchHistory() {
+  const { data: session } = useSession();
   return useQuery({
-    queryKey: ["watchHistory"],
+    queryKey: ["watchHistory", session?.user?.id],
     queryFn: fetchHistory,
     staleTime: 30 * 1000,
+    enabled: !!session?.user?.id,
   });
 }

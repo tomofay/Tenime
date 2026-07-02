@@ -25,9 +25,13 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
   const { data: streamSource, isLoading, isError } = useVideoSource(id, ep, anime?.title);
 
   const [activeEmbedUrl, setActiveEmbedUrl] = useState<string>("");
+  const [isDirectVideo, setIsDirectVideo] = useState(false);
   const embedUrl = activeEmbedUrl || streamSource?.embedUrl || "";
 
-  const handleMirrorChange = useCallback((newEmbedUrl: string) => { setActiveEmbedUrl(newEmbedUrl); }, []);
+  const handleMirrorChange = useCallback((newEmbedUrl: string, directVideo?: boolean) => {
+    setActiveEmbedUrl(newEmbedUrl);
+    setIsDirectVideo(!!directVideo);
+  }, []);
 
   const episodes = episodesData?.data ?? [];
   const totalEpisodes = episodes.length;
@@ -53,14 +57,14 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
           <div className="rounded-xl overflow-hidden shadow-2xl shadow-black/30">
             {isLoading && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3"><div className="h-10 w-10 animate-spin rounded-full border-2 border-accent border-t-transparent" /><p className="text-sm text-white/60">Mencari sumber video...</p></div></div>}
             {isError && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3 text-center px-4"><p className="text-sm text-white/60">Gagal menemukan episode ini.</p></div></div>}
-            {streamSource && !isLoading && streamSource.embedUrl && <VideoPlayer embedUrl={embedUrl} />}
+            {streamSource && !isLoading && streamSource.embedUrl && <VideoPlayer embedUrl={embedUrl} directVideo={isDirectVideo || embedUrl.includes("googlevideo.com")} />}
             {streamSource && !isLoading && !streamSource.embedUrl && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3 text-center px-4"><p className="text-sm text-white/60">Sumber video tidak ditemukan.</p></div></div>}
           </div>
 
           <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-foreground">{displayTitle}</p></div></div>
 
           {streamSource?.qualities && streamSource.qualities.length > 0 && <MirrorSelector qualities={streamSource.qualities} onSelectMirror={handleMirrorChange} />}
-          <DownloadSection mirrors={streamSource?.mirrors ?? []} downloadGroups={streamSource?.downloadGroups} malId={id} episode={ep} animeTitle={anime?.title} />
+          <DownloadSection downloadGroups={streamSource?.downloadGroups} malId={id} episode={ep} animeTitle={anime?.title} />
           <EpisodeComments malId={id} episodeNumber={ep} />
         </div>
 

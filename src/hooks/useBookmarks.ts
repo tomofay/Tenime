@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import type { Bookmark } from "@/types/user";
 
 async function fetchBookmarks(): Promise<Bookmark[]> {
@@ -8,10 +9,12 @@ async function fetchBookmarks(): Promise<Bookmark[]> {
 }
 
 export function useBookmarks() {
+  const { data: session } = useSession();
   return useQuery({
-    queryKey: ["bookmarks"],
+    queryKey: ["bookmarks", session?.user?.id],
     queryFn: fetchBookmarks,
     staleTime: 60 * 1000,
+    enabled: !!session?.user?.id,
   });
 }
 

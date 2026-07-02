@@ -41,16 +41,12 @@ export function Section({ title, children, variant = "horizontal", seeAllHref }:
   }
 
   return (
-    <section className="py-8">
+    <section className="py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-end justify-between mb-5">
-          <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        <div className="flex items-end justify-between mb-4 sm:mb-5">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground">{title}</h2>
           {seeAllHref && (
-            <Link
-              href={seeAllHref}
-              className="text-xs font-medium text-accent hover:text-accent-hover transition-colors"
-            >
+            <Link href={seeAllHref} className="text-xs font-medium text-accent hover:text-accent-hover transition-colors">
               Lihat Semua →
             </Link>
           )}
@@ -58,38 +54,26 @@ export function Section({ title, children, variant = "horizontal", seeAllHref }:
 
         {variant === "horizontal" ? (
           <div className="relative group/scroll">
-            {/* Scroll container */}
             <div
               ref={scrollRef}
-              className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 pb-1"
+              className="flex gap-2 sm:gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 pb-1 [&>*]:w-[calc((100vw-2rem-16px)/3)] [&>*]:sm:w-40 [&>*]:lg:w-44 [&>*]:shrink-0"
             >
               {children}
             </div>
 
-            {/* Left nav */}
             {canScrollLeft && (
-              <button
-                onClick={() => scroll("left")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm p-2 text-foreground shadow-lg opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-                aria-label="Scroll left"
-              >
+              <button onClick={() => scroll("left")} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm p-2 text-foreground shadow-lg hidden sm:flex opacity-0 group-hover/scroll:opacity-100 transition-opacity" aria-label="Scroll left">
                 <ChevronLeft className="h-4 w-4" />
               </button>
             )}
-
-            {/* Right nav */}
             {canScrollRight && (
-              <button
-                onClick={() => scroll("right")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm p-2 text-foreground shadow-lg opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-                aria-label="Scroll right"
-              >
+              <button onClick={() => scroll("right")} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm p-2 text-foreground shadow-lg hidden sm:flex opacity-0 group-hover/scroll:opacity-100 transition-opacity" aria-label="Scroll right">
                 <ChevronRight className="h-4 w-4" />
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
             {children}
           </div>
         )}

@@ -6,7 +6,7 @@ import type { MirrorOption } from "@/types/stream";
 
 interface MirrorSelectorProps {
   qualities: { quality: string; mirrors: MirrorOption[] }[];
-  onSelectMirror: (embedUrl: string) => void;
+  onSelectMirror: (embedUrl: string, directVideo?: boolean) => void;
 }
 
 const qualityOrder = ["1080p", "720p", "480p", "360p"];
@@ -20,7 +20,7 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
   const sorted = [...qualities].sort((a, b) => qualityOrder.indexOf(a.quality) - qualityOrder.indexOf(b.quality));
   const currentQuality = sorted.find((q) => q.quality === activeQuality) ?? sorted[0];
 
-  async function handleMirrorClick(mirror: MirrorOption) {
+  async function handleMirrorClick(mirror: MirrorOption, idx: number) {
     const key = `${mirror.id}-${mirror.i}-${mirror.q}`;
     setLoadingMirror(key);
     setErrorMsg("");
@@ -28,15 +28,15 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
       const res = await fetch(`/api/mirror?id=${mirror.id}&i=${mirror.i}&q=${mirror.q}`);
       const data = await res.json();
       if (data.embedUrl) {
-        onSelectMirror(data.embedUrl);
+        onSelectMirror(data.embedUrl, !!data.directVideo);
         setFailedMirrors((prev) => { const next = new Set(prev); next.delete(key); return next; });
       } else {
         setFailedMirrors((prev) => new Set(prev).add(key));
-        setErrorMsg(`Mirror "${mirror.name}" tidak tersedia. Coba mirror lain.`);
+        setErrorMsg(`Mirror ${idx + 1} tidak tersedia. Coba mirror lain.`);
       }
     } catch {
       setFailedMirrors((prev) => new Set(prev).add(key));
-      setErrorMsg(`Gagal menghubungi mirror "${mirror.name}".`);
+      setErrorMsg(`Gagal menghubungi Mirror ${idx + 1}.`);
     } finally {
       setLoadingMirror(null);
     }
@@ -67,21 +67,21 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {currentQuality?.mirrors.map((mirror) => {
+        {currentQuality?.mirrors.map((mirror, idx) => {
           const key = `${mirror.id}-${mirror.i}-${mirror.q}`;
           const isLoading = loadingMirror === key;
           const isFailed = failedMirrors.has(key);
           return (
             <button
               key={key}
-              onClick={() => handleMirrorClick(mirror)}
+              onClick={() => handleMirrorClick(mirror, idx)}
               disabled={isLoading}
               className={`inline-flex items-center gap-1.5 rounded-lg bg-surface hover:bg-surface-hover disabled:opacity-50 px-3 py-1.5 text-xs transition-colors border ${
                 isFailed ? "text-red-400 border-red-500/20" : "text-muted hover:text-foreground border-border/50"
               }`}
             >
               {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isFailed && <AlertCircle className="h-3 w-3 text-red-400" />}
-              {mirror.name}
+              Mirror {idx + 1}
             </button>
           );
         })}

@@ -19,15 +19,15 @@ export function ContinueWatchingSection({ entries }: ContinueWatchingSectionProp
         <Link
           key={entry.malId}
           href={`/anime/${entry.malId}/${entry.episodeNumber}`}
-          className="group shrink-0 w-[220px]"
+          className="group shrink-0 w-[calc((100vw-2rem-16px)/3)] sm:w-40 lg:w-44"
         >
-          <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-surface">
+          <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface">
             {entry.posterUrl ? (
               <Image
                 src={entry.posterUrl}
                 alt={entry.title}
                 fill
-                sizes="220px"
+                sizes="(max-width: 640px) 110px, 176px"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : (
@@ -35,32 +35,26 @@ export function ContinueWatchingSection({ entries }: ContinueWatchingSectionProp
                 <Play className="h-8 w-8" />
               </div>
             )}
-            {/* Progress bar */}
             {entry.totalEpisodes && entry.totalEpisodes > 0 && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/40">
                 <div
                   className="h-full bg-green-500 transition-all"
-                  style={{
-                    width: `${Math.min(100, (entry.episodeNumber / entry.totalEpisodes) * 100)}%`,
-                  }}
+                  style={{ width: `${Math.min(100, (entry.episodeNumber / entry.totalEpisodes) * 100)}%` }}
                 />
               </div>
             )}
-            {/* Play overlay */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
               <Play className="h-10 w-10 text-white opacity-0 group-hover:opacity-100 transition-opacity fill-white" />
             </div>
           </div>
-          <div className="mt-2 space-y-0.5">
-            <p className="text-sm font-medium text-foreground truncate">
-              {entry.title}
-            </p>
-            <p className="text-xs text-muted flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              Ep {entry.episodeNumber}
-              {entry.totalEpisodes && ` / ${entry.totalEpisodes}`}
-            </p>
-          </div>
+          <p className="mt-1.5 text-xs sm:text-sm font-medium text-foreground truncate">
+            {entry.title}
+          </p>
+          <p className="text-[10px] sm:text-xs text-muted flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            Ep {entry.episodeNumber}
+            {entry.totalEpisodes && ` / ${entry.totalEpisodes}`}
+          </p>
         </Link>
       ))}
     </Section>

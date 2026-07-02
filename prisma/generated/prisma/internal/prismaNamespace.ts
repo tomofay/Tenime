@@ -389,7 +389,6 @@ export const ModelName = {
   Bookmark: 'Bookmark',
   WatchHistory: 'WatchHistory',
   AnimeSlugMapping: 'AnimeSlugMapping',
-  DownloadedFile: 'DownloadedFile',
   CachedAnime: 'CachedAnime'
 } as const
 
@@ -406,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "comment" | "bookmark" | "watchHistory" | "animeSlugMapping" | "downloadedFile" | "cachedAnime"
+    modelProps: "user" | "comment" | "bookmark" | "watchHistory" | "animeSlugMapping" | "cachedAnime"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -740,72 +739,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    DownloadedFile: {
-      payload: Prisma.$DownloadedFilePayload<ExtArgs>
-      fields: Prisma.DownloadedFileFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.DownloadedFileFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.DownloadedFileFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        findFirst: {
-          args: Prisma.DownloadedFileFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.DownloadedFileFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        findMany: {
-          args: Prisma.DownloadedFileFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>[]
-        }
-        create: {
-          args: Prisma.DownloadedFileCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        createMany: {
-          args: Prisma.DownloadedFileCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        delete: {
-          args: Prisma.DownloadedFileDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        update: {
-          args: Prisma.DownloadedFileUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        deleteMany: {
-          args: Prisma.DownloadedFileDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.DownloadedFileUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        upsert: {
-          args: Prisma.DownloadedFileUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DownloadedFilePayload>
-        }
-        aggregate: {
-          args: Prisma.DownloadedFileAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateDownloadedFile>
-        }
-        groupBy: {
-          args: Prisma.DownloadedFileGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DownloadedFileGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.DownloadedFileCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DownloadedFileCountAggregateOutputType> | number
-        }
-      }
-    }
     CachedAnime: {
       payload: Prisma.$CachedAnimePayload<ExtArgs>
       fields: Prisma.CachedAnimeFieldRefs
@@ -917,9 +850,9 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   avatarUrl: 'avatarUrl',
-  bio: 'bio',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  bio: 'bio'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -946,8 +879,8 @@ export const BookmarkScalarFieldEnum = {
   posterUrl: 'posterUrl',
   score: 'score',
   type: 'type',
-  status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  status: 'status'
 } as const
 
 export type BookmarkScalarFieldEnum = (typeof BookmarkScalarFieldEnum)[keyof typeof BookmarkScalarFieldEnum]
@@ -977,22 +910,6 @@ export const AnimeSlugMappingScalarFieldEnum = {
 } as const
 
 export type AnimeSlugMappingScalarFieldEnum = (typeof AnimeSlugMappingScalarFieldEnum)[keyof typeof AnimeSlugMappingScalarFieldEnum]
-
-
-export const DownloadedFileScalarFieldEnum = {
-  id: 'id',
-  malId: 'malId',
-  animeTitle: 'animeTitle',
-  episodeNumber: 'episodeNumber',
-  quality: 'quality',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  sizeBytes: 'sizeBytes',
-  source: 'source',
-  createdAt: 'createdAt'
-} as const
-
-export type DownloadedFileScalarFieldEnum = (typeof DownloadedFileScalarFieldEnum)[keyof typeof DownloadedFileScalarFieldEnum]
 
 
 export const CachedAnimeScalarFieldEnum = {
@@ -1080,18 +997,6 @@ export const AnimeSlugMappingOrderByRelevanceFieldEnum = {
 export type AnimeSlugMappingOrderByRelevanceFieldEnum = (typeof AnimeSlugMappingOrderByRelevanceFieldEnum)[keyof typeof AnimeSlugMappingOrderByRelevanceFieldEnum]
 
 
-export const DownloadedFileOrderByRelevanceFieldEnum = {
-  id: 'id',
-  animeTitle: 'animeTitle',
-  quality: 'quality',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  source: 'source'
-} as const
-
-export type DownloadedFileOrderByRelevanceFieldEnum = (typeof DownloadedFileOrderByRelevanceFieldEnum)[keyof typeof DownloadedFileOrderByRelevanceFieldEnum]
-
-
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -1140,13 +1045,6 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'BigInt'
- */
-export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
     
 
 
@@ -1278,7 +1176,6 @@ export type GlobalOmitConfig = {
   bookmark?: Prisma.BookmarkOmit
   watchHistory?: Prisma.WatchHistoryOmit
   animeSlugMapping?: Prisma.AnimeSlugMappingOmit
-  downloadedFile?: Prisma.DownloadedFileOmit
   cachedAnime?: Prisma.CachedAnimeOmit
 }
 

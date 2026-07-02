@@ -11,7 +11,6 @@ interface FilterState {
   status: AnimeStatus;
   genres: number[];
   seasonValue: string;
-  downloadedOnly: boolean;
   sort: SortField;
   sortDirection: SortDirection;
   page: number;
@@ -22,7 +21,6 @@ interface FilterState {
   toggleGenre: (genreId: number) => void;
   setGenres: (genres: number[]) => void;
   setSeasonValue: (value: string) => void;
-  setDownloadedOnly: (val: boolean) => void;
   setSort: (sort: SortField) => void;
   setSortDirection: (direction: SortDirection) => void;
   setPage: (page: number) => void;
@@ -35,7 +33,6 @@ export const useFilterStore = create<FilterState>((set) => ({
   status: "",
   genres: [],
   seasonValue: "",
-  downloadedOnly: false,
   sort: "",
   sortDirection: "desc",
   page: 1,
@@ -52,7 +49,6 @@ export const useFilterStore = create<FilterState>((set) => ({
     })),
   setGenres: (genres) => set({ genres, page: 1 }),
   setSeasonValue: (seasonValue) => set({ seasonValue, page: 1 }),
-  setDownloadedOnly: (downloadedOnly) => set({ downloadedOnly, page: 1 }),
   setSort: (sort) => set({ sort }),
   setSortDirection: (direction) => set({ sortDirection: direction }),
   setPage: (page) => set({ page }),
@@ -63,7 +59,6 @@ export const useFilterStore = create<FilterState>((set) => ({
       status: "",
       genres: [],
       seasonValue: "",
-      downloadedOnly: false,
       sort: "",
       sortDirection: "desc",
       page: 1,

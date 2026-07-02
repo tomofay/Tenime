@@ -19,7 +19,7 @@ export async function getEpisodeStream(
   const epLink = resolved.episodes.find((e) => e.number === episode);
 
   if (!epLink) {
-    return { episode, embedUrl: "", qualities: [], mirrors: [], downloadGroups: [], episodeUrl: "" };
+    return { episode, embedUrl: "", qualities: [], downloadGroups: [], episodeUrl: "" };
   }
 
   const stream = await fetchEpisodeStreamFromUrl(epLink.url);
@@ -28,7 +28,6 @@ export async function getEpisodeStream(
     episode,
     embedUrl: stream.embedUrl || "",
     qualities: stream.qualities,
-    mirrors: stream.mirrors,
     downloadGroups: stream.downloadGroups,
     episodeUrl: epLink.url,
   };

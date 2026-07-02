@@ -19,13 +19,9 @@ export async function GET(
     // 1. Check DB cache first (permanent)
     const cached = await db.cachedAnime.findUnique({ where: { malId: id } });
     if (cached) {
-      const anyDownloaded = await db.downloadedFile.findFirst({
-        where: { malId: id }, orderBy: { createdAt: "desc" },
-      });
       return NextResponse.json({
         data: cached.data,
         cached: true,
-        downloadStatus: { downloaded: !!anyDownloaded },
       });
     }
 
@@ -35,14 +31,9 @@ export async function GET(
     // 3. Cache to DB
     await cacheAnimeData(id, anime);
 
-    const anyDownloaded = await db.downloadedFile.findFirst({
-      where: { malId: id }, orderBy: { createdAt: "desc" },
-    });
-
     return NextResponse.json({
       data: anime,
       cached: false,
-      downloadStatus: { downloaded: !!anyDownloaded },
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

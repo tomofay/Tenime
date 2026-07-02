@@ -10,11 +10,28 @@ function ensureCacheDir() {
 
 export async function cacheAnimeData(malId: number, data: unknown): Promise<void> {
   try {
-    await db.cachedAnime.upsert({
-      where: { malId },
-      update: { data: data as object, updatedAt: new Date() },
-      create: { malId, data: data as object },
-    });
+    const existing = await db.cachedAnime.findUnique({ where: { malId }, select: { malId: true } });
+
+    if (existing) {
+      await db.cachedAnime.update({
+        where: { malId },
+        data: { data: data as object, updatedAt: new Date() },
+      });
+    } else {
+      try {
+        await db.cachedAnime.create({ data: { malId, data: data as object } });
+      } catch (e: unknown) {
+        const err = e as { code?: string };
+        if (err.code === "P2002") {
+          await db.cachedAnime.update({
+            where: { malId },
+            data: { data: data as object, updatedAt: new Date() },
+          });
+        } else {
+          throw e;
+        }
+      }
+    }
 
     // Download & cache poster locally
     const d = data as Record<string, unknown>;

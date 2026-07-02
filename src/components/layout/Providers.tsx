@@ -1,8 +1,21 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SessionProvider } from "next-auth/react";
-import { useState, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { SessionProvider, useSession } from "next-auth/react";
+import { useState, useEffect, type ReactNode } from "react";
+
+function CacheInvalidator({ children }: { children: ReactNode }) {
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+    queryClient.invalidateQueries({ queryKey: ["watchHistory"] });
+    queryClient.invalidateQueries({ queryKey: ["continue-watching"] });
+  }, [session?.user?.id, queryClient]);
+
+  return <>{children}</>;
+}
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -21,7 +34,9 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <SessionProvider>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <CacheInvalidator>{children}</CacheInvalidator>
+      </QueryClientProvider>
     </SessionProvider>
   );
 }

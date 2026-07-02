@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getEpisodeStream } from "@/lib/scraper";
-import { getLocalStreamUrl } from "@/lib/downloader";
 import { db } from "@/lib/db";
 import { withRateLimit } from "@/lib/api-utils";
 
@@ -28,12 +27,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Check local file first
-    const local = await getLocalStreamUrl(malIdNum, epNum);
-    if (local) {
-      return NextResponse.json({ ...local, source: "local" });
-    }
-
     // If title missing or generic fallback, fetch from Jikan cache
     let resolvedTitle: string | undefined | null = title;
     if (!resolvedTitle || resolvedTitle.startsWith("anime-")) {
@@ -50,7 +43,7 @@ export async function GET(request: Request) {
 
     if (!result.embedUrl) {
       return NextResponse.json(
-        { error: "Stream source not found", episode: result.episode, embedUrl: "", qualities: result.qualities, mirrors: result.mirrors },
+        { error: "Stream source not found", episode: result.episode, embedUrl: "", qualities: result.qualities, downloadGroups: result.downloadGroups },
         { status: 404 }
       );
     }

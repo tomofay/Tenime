@@ -1,9 +1,6 @@
-import "dotenv/config";
-import { PrismaClient } from "../../prisma/generated/prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import { existsSync, statSync } from "fs";
 import { promises as fsp } from "fs";
 import path from "path";
+import os from "os";
 import {
   scrapeAceFile,
   downloadFromPixelDrain,
@@ -11,53 +8,7 @@ import {
 } from "./scraper/mirror-downloader";
 import type { DownloadGroup } from "@/types/stream";
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
-
-function createPrismaClient() {
-  const url = new URL(process.env.DATABASE_URL!);
-  const adapter = new PrismaMariaDb({
-    host: url.hostname, port: Number(url.port) || 3306,
-    user: url.username || "root", password: url.password || "",
-    database: url.pathname.replace("/", ""), connectionLimit: 5,
-  });
-  return new PrismaClient({ adapter });
-}
-
-export const db = globalForPrisma.prisma ?? createPrismaClient();
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
-
-const DOWNLOADS_DIR = path.join(process.cwd(), "downloads");
-
-async function saveToDb(malId: number, ep: number, animeTitle: string, quality: string, filePath: string) {
-  const stats = await fsp.stat(filePath);
-  await db.downloadedFile.upsert({
-    where: { malId_episodeNumber_quality: { malId, episodeNumber: ep, quality } },
-    update: { filePath, fileName: path.basename(filePath), sizeBytes: stats.size, animeTitle, source: "download" },
-    create: { malId, animeTitle, episodeNumber: ep, quality, fileName: path.basename(filePath), filePath, sizeBytes: stats.size, source: "download" },
-  });
-}
-
-export async function checkLocalFile(malId: number, ep: number, quality = "720p") {
-  const record = await db.downloadedFile.findUnique({
-    where: { malId_episodeNumber_quality: { malId, episodeNumber: ep, quality } },
-  });
-  if (record && existsSync(record.filePath) && statSync(record.filePath).size > 1_000_000) {
-    return { exists: true, filePath: record.filePath, fileName: record.fileName };
-  }
-  if (record) {
-    try { await fsp.unlink(record.filePath); } catch {}
-    await db.downloadedFile.delete({ where: { id: record.id } });
-  }
-  return { exists: false, filePath: null, fileName: null };
-}
-
-export async function getLocalStreamUrl(malId: number, ep: number) {
-  for (const q of ["720p", "480p", "360p", "1080p"]) {
-    const local = await checkLocalFile(malId, ep, q);
-    if (local.exists && local.filePath) return { embedUrl: `/api/stream/local/${malId}/${ep}/${q}`, source: "local" };
-  }
-  return null;
-}
+const TEMP_DIR = path.join(os.tmpdir(), "tenime-downloads");
 
 function findMirrorByHost(groups: DownloadGroup[], hostPattern: string, format?: "mp4" | "mkv", quality?: string): { url: string; name: string } | null {
   let filtered = format ? groups.filter((g) => g.format === format) : groups;
@@ -129,13 +80,10 @@ async function tryFormat(
 export async function downloadEpisode(
   malId: number, ep: number, animeTitle: string,
   downloadGroups: DownloadGroup[], quality = "720p"
-): Promise<{ success: boolean; filePath?: string; error?: string }> {
-  const existing = await checkLocalFile(malId, ep, quality);
-  if (existing.exists) return { success: true, filePath: existing.filePath! };
+): Promise<{ success: boolean; filePath?: string; fileName?: string; error?: string }> {
+  await fsp.mkdir(TEMP_DIR, { recursive: true });
 
-  await fsp.mkdir(DOWNLOADS_DIR, { recursive: true });
-
-  const methods: Array<{ name: string; key: "acefile-gdrive" | "acefile-direct" | "pixeldrain" }> = [
+  const methods: Array<{ name: string; key: "acefile-direct" | "acefile-gdrive" | "pixeldrain" }> = [
     { name: "Acefile→Direct", key: "acefile-direct" },
     { name: "Acefile→GDrive", key: "acefile-gdrive" },
     { name: "PixelDrain", key: "pixeldrain" },
@@ -164,20 +112,12 @@ export async function downloadEpisode(
   }
 
   const ext = usedFormat === "mkv" ? ".mkv" : ".mp4";
-  const filePath = path.join(DOWNLOADS_DIR, `${malId}-ep${String(ep).padStart(2, "0")}-${usedQuality}${ext}`);
+  const safeTitle = animeTitle.replace(/[^a-zA-Z0-9\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\- ]/g, "").trim().slice(0, 50) || `anime-${malId}`;
+  const fileName = `${safeTitle}-EP${String(ep).padStart(2, "0")}-${usedQuality}${ext}`;
+  const filePath = path.join(TEMP_DIR, fileName);
 
   await fsp.writeFile(filePath, Buffer.from(result.buffer));
-  await saveToDb(malId, ep, animeTitle, usedQuality, filePath);
 
   console.log(`[download] ✅ MAL ${malId} EP ${ep} → ${usedFormat} ${usedQuality} via ${usedMethod}`);
-  return { success: true, filePath };
-}
-
-export async function getDownloadStatus(malId: number, ep: number) {
-  const local = await getLocalStreamUrl(malId, ep);
-  if (local) {
-    const record = await db.downloadedFile.findFirst({ where: { malId, episodeNumber: ep }, orderBy: { createdAt: "desc" } });
-    return { downloaded: true, quality: record?.quality ?? "", filePath: record?.filePath ?? "" };
-  }
-  return { downloaded: false };
+  return { success: true, filePath, fileName };
 }

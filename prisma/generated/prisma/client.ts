@@ -67,11 +67,6 @@ export type WatchHistory = Prisma.WatchHistoryModel
  */
 export type AnimeSlugMapping = Prisma.AnimeSlugMappingModel
 /**
- * Model DownloadedFile
- * 
- */
-export type DownloadedFile = Prisma.DownloadedFileModel
-/**
  * Model CachedAnime
  * 
  */

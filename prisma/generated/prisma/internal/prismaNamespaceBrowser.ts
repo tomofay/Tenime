@@ -56,7 +56,6 @@ export const ModelName = {
   Bookmark: 'Bookmark',
   WatchHistory: 'WatchHistory',
   AnimeSlugMapping: 'AnimeSlugMapping',
-  DownloadedFile: 'DownloadedFile',
   CachedAnime: 'CachedAnime'
 } as const
 
@@ -82,9 +81,9 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   avatarUrl: 'avatarUrl',
-  bio: 'bio',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  bio: 'bio'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -111,8 +110,8 @@ export const BookmarkScalarFieldEnum = {
   posterUrl: 'posterUrl',
   score: 'score',
   type: 'type',
-  status: 'status',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  status: 'status'
 } as const
 
 export type BookmarkScalarFieldEnum = (typeof BookmarkScalarFieldEnum)[keyof typeof BookmarkScalarFieldEnum]
@@ -142,22 +141,6 @@ export const AnimeSlugMappingScalarFieldEnum = {
 } as const
 
 export type AnimeSlugMappingScalarFieldEnum = (typeof AnimeSlugMappingScalarFieldEnum)[keyof typeof AnimeSlugMappingScalarFieldEnum]
-
-
-export const DownloadedFileScalarFieldEnum = {
-  id: 'id',
-  malId: 'malId',
-  animeTitle: 'animeTitle',
-  episodeNumber: 'episodeNumber',
-  quality: 'quality',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  sizeBytes: 'sizeBytes',
-  source: 'source',
-  createdAt: 'createdAt'
-} as const
-
-export type DownloadedFileScalarFieldEnum = (typeof DownloadedFileScalarFieldEnum)[keyof typeof DownloadedFileScalarFieldEnum]
 
 
 export const CachedAnimeScalarFieldEnum = {
@@ -243,18 +226,6 @@ export const AnimeSlugMappingOrderByRelevanceFieldEnum = {
 } as const
 
 export type AnimeSlugMappingOrderByRelevanceFieldEnum = (typeof AnimeSlugMappingOrderByRelevanceFieldEnum)[keyof typeof AnimeSlugMappingOrderByRelevanceFieldEnum]
-
-
-export const DownloadedFileOrderByRelevanceFieldEnum = {
-  id: 'id',
-  animeTitle: 'animeTitle',
-  quality: 'quality',
-  fileName: 'fileName',
-  filePath: 'filePath',
-  source: 'source'
-} as const
-
-export type DownloadedFileOrderByRelevanceFieldEnum = (typeof DownloadedFileOrderByRelevanceFieldEnum)[keyof typeof DownloadedFileOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {

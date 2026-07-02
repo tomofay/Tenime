@@ -1,35 +1,11 @@
 import { NextResponse } from "next/server";
-import { downloadEpisode, getDownloadStatus } from "@/lib/downloader";
-import { downloadSchema, downloadQuerySchema } from "@/lib/validation";
+import { downloadEpisode } from "@/lib/downloader";
+import { downloadSchema } from "@/lib/validation";
+import { createDownloadToken } from "@/lib/download-tokens";
 import { withRateLimit } from "@/lib/api-utils";
 import type { DownloadGroup } from "@/types/stream";
 
 const DOWNLOAD_LIMIT = { windowMs: 60_000, maxRequests: 15 };
-const BATCH_LIMIT = { windowMs: 60_000, maxRequests: 30 };
-
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const isBatch = url.searchParams.get("batch") === "1";
-  const rateLimit = withRateLimit(request, isBatch ? BATCH_LIMIT : DOWNLOAD_LIMIT);
-  if (rateLimit) return rateLimit;
-
-  const { searchParams } = new URL(request.url);
-  const parsed = downloadQuerySchema.safeParse({
-    malId: searchParams.get("malId"),
-    ep: searchParams.get("ep"),
-  });
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid malId or ep" }, { status: 400 });
-  }
-
-  try {
-    const status = await getDownloadStatus(parsed.data.malId, parsed.data.ep);
-    return NextResponse.json(status);
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 502 });
-  }
-}
 
 export async function POST(request: Request) {
   const rateLimit = withRateLimit(request, DOWNLOAD_LIMIT);
@@ -46,11 +22,9 @@ export async function POST(request: Request) {
     const { malId, episodeNumber, animeTitle, quality, downloadGroups } = parsed.data;
     const effectiveQuality = quality || "720p";
 
-    // Use downloadGroups if available, otherwise fall back to mirrors
     let groups: DownloadGroup[] = downloadGroups as DownloadGroup[] | undefined || [];
     if (groups.length === 0) {
-      // Build basic groups from flat mirrors (backward compat)
-      const mirrors = (parsed.data as any).mirrors || [];
+      const mirrors = parsed.data.mirrors ?? [];
       if (mirrors.length === 0) {
         return NextResponse.json({ success: false, error: "No download groups or mirrors provided" }, { status: 400 });
       }
@@ -58,7 +32,16 @@ export async function POST(request: Request) {
     }
 
     const result = await downloadEpisode(malId, episodeNumber, animeTitle || "", groups, effectiveQuality);
-    return NextResponse.json(result);
+    if (!result.success) {
+      return NextResponse.json(result, { status: 502 });
+    }
+
+    const token = createDownloadToken(result.filePath!, result.fileName!);
+
+    return NextResponse.json({
+      success: true,
+      streamUrl: `/api/download/stream?token=${token}`,
+    });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 502 });
   }

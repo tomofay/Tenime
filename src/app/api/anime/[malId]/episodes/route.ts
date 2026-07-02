@@ -39,22 +39,8 @@ export async function GET(
       }
     }
 
-    // Fallback to downloaded episodes
-    const files = await db.downloadedFile.findMany({
-      where: { malId: id },
-      select: { episodeNumber: true },
-      orderBy: { episodeNumber: "asc" },
-    });
-    const eps = [...new Set(files.map((f) => f.episodeNumber))];
-    const episodes = eps.map((ep) => ({
-      mal_id: id,
-      title: `Episode ${ep}`,
-      episode: String(ep),
-      url: null,
-      score: null,
-      filler: false,
-      recap: false,
-    }));
+    // Fallback: return empty
+    const episodes: Array<Record<string, unknown>> = [];
     return NextResponse.json({
       data: episodes,
       pagination: { last_visible_page: 1, has_next_page: false, current_page: 1, items: { count: episodes.length, total: episodes.length, per_page: episodes.length } },

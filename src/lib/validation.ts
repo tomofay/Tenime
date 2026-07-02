@@ -41,11 +41,6 @@ export const downloadSchema = z.object({
   })).optional(),
 });
 
-export const downloadQuerySchema = z.object({
-  malId: z.coerce.number().int().positive(),
-  ep: z.coerce.number().int().positive(),
-});
-
 export const cacheAnimeSchema = z.object({
   malIds: z.array(z.number().int().positive()).max(25),
 });
