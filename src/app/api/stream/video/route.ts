@@ -42,8 +42,8 @@ export async function GET(request: Request) {
     responseHeaders.set("Accept-Ranges", ar);
 
     responseHeaders.set("Cache-Control", "public, max-age=3600");
+    responseHeaders.set("X-Accel-Buffering", "no");
 
-    // Allow CORS if needed
     responseHeaders.set("Access-Control-Allow-Origin", "*");
     responseHeaders.set("Access-Control-Allow-Headers", "Range");
     responseHeaders.set("Access-Control-Expose-Headers", "Content-Range, Accept-Ranges, Content-Length");
