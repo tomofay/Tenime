@@ -59,14 +59,10 @@ export async function GET(request: Request) {
             directVideo: true,
           });
         }
+      } catch {}
 
-        // Fallback: proxy the entire desustream page
-        const u = new URL(iframeSrc);
-        return NextResponse.json({ embedUrl: `/api/mirror/proxy${u.pathname}${u.search}` });
-      } catch {
-        const u = new URL(iframeSrc);
-        return NextResponse.json({ embedUrl: `/api/mirror/proxy${u.pathname}${u.search}` });
-      }
+      const u = new URL(iframeSrc);
+      return NextResponse.json({ embedUrl: `/api/mirror/proxy${u.pathname}${u.search}` });
     }
 
     return NextResponse.json({ embedUrl: iframeSrc });

@@ -1,4 +1,8 @@
+import { SocksProxyAgent } from "socks-proxy-agent";
+
 export const dynamic = "force-dynamic";
+
+const SOCKS_PROXY = process.env.SOCKS_PROXY || "";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -9,20 +13,24 @@ export async function GET(request: Request) {
   }
 
   try {
-    const upstream = await fetch(targetUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/125.0.0.0",
-        Referer: "https://desustream.me/",
-        "Range": request.headers.get("range") ?? "",
-      },
-      redirect: "follow",
-    });
+    const reqHeaders: Record<string, string> = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/125.0.0.0",
+      Referer: "https://desustream.me/",
+    };
 
-    console.error(`[video-proxy] upstream status=${upstream.status} type=${upstream.headers.get("content-type")} len=${upstream.headers.get("content-length")} body=${!!upstream.body}`);
+    const range = request.headers.get("range");
+    if (range) reqHeaders["Range"] = range;
+
+    // Use SOCKS5 proxy if configured, otherwise direct connection (local dev)
+    const fetchOpts: RequestInit = { headers: reqHeaders, redirect: "follow" };
+    if (SOCKS_PROXY) {
+      (fetchOpts as any).agent = new SocksProxyAgent(SOCKS_PROXY);
+    }
+
+    const upstream = await fetch(targetUrl, fetchOpts);
 
     if (!upstream.ok) {
       const errBody = await upstream.text().catch(() => "");
-      console.error(`[video-proxy] upstream error body: ${errBody.slice(0, 200)}`);
       return Response.json({ error: `Upstream returned ${upstream.status}`, detail: errBody.slice(0, 500) }, { status: 502 });
     }
 
@@ -42,7 +50,6 @@ export async function GET(request: Request) {
       },
     });
   } catch (e) {
-    console.error(`[video-proxy] fetch failed: ${(e as Error).message}`, (e as Error).stack);
     return Response.json({ error: `Fetch failed: ${(e as Error).message}` }, { status: 502 });
   }
 }
