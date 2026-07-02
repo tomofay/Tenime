@@ -46,12 +46,18 @@ export async function GET(request: Request) {
 
         const videoSrc = page("video source").first().attr("src") || page("video").first().attr("src");
         if (videoSrc && videoSrc.includes("googlevideo.com")) {
-          return NextResponse.json({ embedUrl: videoSrc, directVideo: true });
+          return NextResponse.json({
+            embedUrl: `/api/stream/video?url=${encodeURIComponent(videoSrc)}`,
+            directVideo: true,
+          });
         }
 
         const videoMatch = pageHtml.match(/(https?:\/\/[^"'\s]*googlevideo\.com\/videoplayback[^"'\s]*)/i);
         if (videoMatch) {
-          return NextResponse.json({ embedUrl: videoMatch[1], directVideo: true });
+          return NextResponse.json({
+            embedUrl: `/api/stream/video?url=${encodeURIComponent(videoMatch[1])}`,
+            directVideo: true,
+          });
         }
 
         const u = new URL(iframeSrc);
