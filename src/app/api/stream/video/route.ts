@@ -8,45 +8,32 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing url" }, { status: 400 });
   }
 
+  // Redirect browser directly to googlevideo
+  // Referer check happens on our server's outgoing request, but the redirect
+  // lets the client fetch directly — googlevideo doesn't check Referer for playback.
   try {
-    const reqHeaders: Record<string, string> = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/125.0.0.0",
-      Referer: "https://desustream.me/",
-      Origin: "https://desustream.me",
-    };
-
-    // Forward Range header for seeking
-    const range = request.headers.get("range");
-    if (range) {
-      reqHeaders["Range"] = range;
-    }
-
     const res = await fetch(targetUrl, {
-      headers: reqHeaders,
-      redirect: "follow",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/125.0.0.0",
+        Referer: "https://desustream.me/",
+      },
+      redirect: "manual",
     });
 
-    const responseHeaders = new Headers();
+    // Follow redirects server-side to get final location
+    if (res.status >= 300 && res.status < 400) {
+      const location = res.headers.get("location");
+      if (location) {
+        return NextResponse.redirect(location, { status: 302 });
+      }
+    }
 
-    // Copy all relevant headers from upstream
-    const contentType = res.headers.get("content-type") || "video/mp4";
-    responseHeaders.set("Content-Type", contentType);
-
-    const cl = res.headers.get("content-length");
-    if (cl) responseHeaders.set("Content-Length", cl);
-
-    const cr = res.headers.get("content-range");
-    if (cr) responseHeaders.set("Content-Range", cr);
-
-    const ar = res.headers.get("accept-ranges") || "bytes";
-    responseHeaders.set("Accept-Ranges", ar);
-
-    responseHeaders.set("Cache-Control", "public, max-age=3600");
+    // Stream the response — but we need to handle this properly for large files
+    // Force raw response without Node.js buffering
+    const responseHeaders = new Headers(res.headers);
+    responseHeaders.delete("content-encoding");
+    responseHeaders.set("Cache-Control", "no-store");
     responseHeaders.set("X-Accel-Buffering", "no");
-
-    responseHeaders.set("Access-Control-Allow-Origin", "*");
-    responseHeaders.set("Access-Control-Allow-Headers", "Range");
-    responseHeaders.set("Access-Control-Expose-Headers", "Content-Range, Accept-Ranges, Content-Length");
 
     return new NextResponse(res.body, {
       status: res.status,
