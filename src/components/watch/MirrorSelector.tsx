@@ -28,7 +28,11 @@ export function MirrorSelector({ qualities, onSelectMirror }: MirrorSelectorProp
       const res = await fetch(`/api/mirror?id=${mirror.id}&i=${mirror.i}&q=${mirror.q}`);
       const data = await res.json();
       if (data.embedUrl) {
-        onSelectMirror(data.embedUrl, !!data.directVideo);
+        if (data.openInTab) {
+          window.open(data.embedUrl, "_blank", "noopener,noreferrer");
+        } else {
+          onSelectMirror(data.embedUrl, !!data.directVideo);
+        }
         setFailedMirrors((prev) => { const next = new Set(prev); next.delete(key); return next; });
       } else {
         setFailedMirrors((prev) => new Set(prev).add(key));

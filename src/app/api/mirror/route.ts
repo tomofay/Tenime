@@ -32,37 +32,7 @@ export async function GET(request: Request) {
     }
 
     if (iframeSrc.includes("desustream.me")) {
-      try {
-        const pageRes = await fetch(iframeSrc, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/125.0.0.0",
-            Referer: "https://otakudesu.blog/",
-            "Accept-Encoding": "identity",
-          },
-          redirect: "follow",
-        });
-        const pageHtml = await pageRes.text();
-        const page = cheerio.load(pageHtml);
-
-        const videoSrc = page("video source").first().attr("src") || page("video").first().attr("src");
-        if (videoSrc && videoSrc.includes("googlevideo.com")) {
-          return NextResponse.json({
-            embedUrl: `/api/stream/video?url=${encodeURIComponent(videoSrc)}`,
-            directVideo: true,
-          });
-        }
-
-        const videoMatch = pageHtml.match(/(https?:\/\/[^"'\s]*googlevideo\.com\/videoplayback[^"'\s]*)/i);
-        if (videoMatch) {
-          return NextResponse.json({
-            embedUrl: `/api/stream/video?url=${encodeURIComponent(videoMatch[1])}`,
-            directVideo: true,
-          });
-        }
-      } catch {}
-
-      const u = new URL(iframeSrc);
-      return NextResponse.json({ embedUrl: `/api/mirror/proxy${u.pathname}${u.search}` });
+      return NextResponse.json({ embedUrl: iframeSrc, openInTab: true });
     }
 
     return NextResponse.json({ embedUrl: iframeSrc });
