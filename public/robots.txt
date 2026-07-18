@@ -2,4 +2,4 @@ User-Agent: *
 Allow: /
 Disallow: /api/
 Disallow: /dashboard/
-Sitemap: https://aniwatch.example.com/sitemap.xml
+Sitemap: https://kicaunime.example.com/sitemap.xml

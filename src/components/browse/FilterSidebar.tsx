@@ -90,7 +90,7 @@ export function FilterSidebar() {
         </div>
         <button
           onClick={resetFilters}
-          className="text-xs text-accent hover:text-accent-hover transition-colors"
+          className="text-xs text-accent hover:text-accent-hover transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded"
         >
           Reset
         </button>
@@ -107,11 +107,12 @@ export function FilterSidebar() {
             <button
               key={t.value}
               onClick={() => setType(t.value)}
+              aria-pressed={type === t.value}
               className={`rounded-md px-3 py-1 text-xs transition-colors ${
                 type === t.value
                   ? "bg-accent text-white"
                   : "bg-surface text-muted hover:text-foreground"
-              }`}
+              } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
             >
               {t.label}
             </button>
@@ -127,11 +128,12 @@ export function FilterSidebar() {
             <button
               key={s.value}
               onClick={() => setStatus(s.value)}
+              aria-pressed={status === s.value}
               className={`rounded-md px-3 py-1 text-xs transition-colors ${
                 status === s.value
                   ? "bg-accent text-white"
                   : "bg-surface text-muted hover:text-foreground"
-              }`}
+              } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
             >
               {s.label}
             </button>
@@ -145,7 +147,7 @@ export function FilterSidebar() {
         <select
           value={seasonValue}
           onChange={(e) => setSeasonValue(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           {seasonOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -161,11 +163,12 @@ export function FilterSidebar() {
             <button
               key={genre.id}
               onClick={() => toggleGenre(genre.id)}
+              aria-pressed={genres.includes(genre.id)}
               className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
                 genres.includes(genre.id)
                   ? "bg-accent text-white"
                   : "bg-surface text-muted hover:text-foreground"
-              }`}
+              } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
             >
               {genre.name}
             </button>
@@ -180,7 +183,7 @@ export function FilterSidebar() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortField)}
-            className="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+            className="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 focus-visible:ring-2 focus-visible:ring-accent/50"
           >
             {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -195,7 +198,7 @@ export function FilterSidebar() {
                   sortDirection === "asc" ? "desc" : "asc"
                 )
               }
-              className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+              className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               {sortDirection === "asc" ? "↑" : "↓"}
             </button>

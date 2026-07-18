@@ -8,7 +8,7 @@ import {
 } from "./scraper/mirror-downloader";
 import type { DownloadGroup } from "@/types/stream";
 
-const TEMP_DIR = path.join(os.tmpdir(), "tenime-downloads");
+const TEMP_DIR = path.join(os.tmpdir(), "kicaunime-downloads");
 
 function findMirrorByHost(groups: DownloadGroup[], hostPattern: string, format?: "mp4" | "mkv", quality?: string): { url: string; name: string } | null {
   let filtered = format ? groups.filter((g) => g.format === format) : groups;

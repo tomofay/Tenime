@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "Buat akun Tenime baru.",
+  description: "Buat akun Kicaunime baru.",
 };
 
 export default function RegisterPage() {
@@ -14,7 +14,7 @@ export default function RegisterPage() {
           Register
         </h1>
         <p className="text-sm text-muted text-center mt-1 mb-8">
-          Create your Tenime account
+          Create your Kicaunime account
         </p>
         <AuthForm mode="register" />
       </div>

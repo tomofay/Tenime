@@ -50,7 +50,7 @@ export function HomePageClient() {
           : trending.isError || !trending.data
           ? <EmptyState message="Gagal memuat trending anime." submessage="Coba refresh halaman." />
           : dedupByMalId(trending.data).slice(0, 12).map((anime, i) => (
-              <AnimeCard key={`trending-${anime.mal_id}`} anime={anime} rank={i + 1} />
+              <AnimeCard key={`trending-${anime.mal_id}`} anime={anime} rank={i + 1} index={i} />
             ))}
       </Section>
 

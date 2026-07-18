@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const { malId, animeTitle, posterUrl, episodeNumber, episodeTitle } = parsed.data;
+  const { malId, animeTitle, posterUrl, episodeNumber, episodeTitle, progressPercent, progressSeconds } = parsed.data;
 
   const history = await db.watchHistory.upsert({
     where: {
@@ -45,6 +45,8 @@ export async function POST(request: Request) {
       watchedAt: new Date(),
       episodeTitle: episodeTitle || null,
       posterUrl: posterUrl || null,
+      progressPercent: progressPercent ?? 0,
+      progressSeconds: progressSeconds ?? 0,
     },
     create: {
       userId: session.user.id,
@@ -53,7 +55,8 @@ export async function POST(request: Request) {
       posterUrl: posterUrl || null,
       episodeNumber,
       episodeTitle: episodeTitle || null,
-      progressPercent: 100,
+      progressPercent: progressPercent ?? 0,
+      progressSeconds: progressSeconds ?? 0,
     },
   });
 

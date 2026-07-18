@@ -2,6 +2,7 @@
 
 import { useRef, useCallback } from "react";
 import type { ReactNode } from "react";
+import { RotateCw } from "lucide-react";
 
 interface InfiniteScrollProps {
   hasNextPage: boolean;
@@ -50,8 +51,16 @@ export function InfiniteScroll({
         </div>
       )}
       {isError && hasNextPage && (
-        <div className="col-span-full flex justify-center py-4">
-          <p className="text-xs text-muted">Scroll lagi untuk melanjutkan.</p>
+        <div className="col-span-full flex flex-col items-center gap-2 py-4">
+          <p className="text-xs text-muted">Gagal memuat halaman berikutnya.</p>
+          <button
+            type="button"
+            onClick={() => fetchNextPage()}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-foreground hover:text-foreground hover:border-accent/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            <RotateCw className="h-3.5 w-3.5" />
+            Coba lagi
+          </button>
         </div>
       )}
     </>

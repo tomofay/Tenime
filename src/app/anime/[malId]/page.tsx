@@ -20,7 +20,7 @@ export async function generateMetadata({
     if (!anime) return { title: "Anime Detail" };
 
     return {
-      title: `${anime.title} — Tenime`,
+      title: `${anime.title} — Kicaunime`,
       description: anime.synopsis?.slice(0, 160) || `Streaming ${anime.title} subtitle Indonesia.`,
       openGraph: {
         title: anime.title,

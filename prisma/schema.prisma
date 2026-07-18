@@ -64,6 +64,7 @@ model WatchHistory {
   episodeNumber   Int
   episodeTitle    String?
   progressPercent Int      @default(0)
+  progressSeconds Int      @default(0)
   watchedAt       DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

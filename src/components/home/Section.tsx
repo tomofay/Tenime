@@ -44,7 +44,10 @@ export function Section({ title, children, variant = "horizontal", seeAllHref }:
     <section className="py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-end justify-between mb-4 sm:mb-5">
-          <h2 className="text-lg sm:text-xl font-bold text-foreground">{title}</h2>
+          <h2 className="group/title flex items-center gap-2.5 text-lg sm:text-xl font-bold text-foreground">
+            <span className="h-5 w-1 rounded-full bg-accent" aria-hidden />
+            <span className="transition-colors group-hover/title:text-accent">{title}</span>
+          </h2>
           {seeAllHref && (
             <Link href={seeAllHref} className="text-xs font-medium text-accent hover:text-accent-hover transition-colors">
               Lihat Semua →

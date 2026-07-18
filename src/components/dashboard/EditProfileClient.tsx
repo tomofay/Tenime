@@ -11,7 +11,10 @@ export function EditProfileClient() {
         <ArrowLeft className="h-4 w-4" />
         Kembali ke Dashboard
       </Link>
-      <h1 className="text-xl font-bold text-foreground mb-6">Edit Profile</h1>
+      <div className="mb-6 motion-safe:animate-state-in">
+        <h1 className="text-xl font-bold text-foreground">Edit Profile</h1>
+        <p className="text-sm text-muted mt-1">Perbarui foto dan bio kamu.</p>
+      </div>
       <EditProfileForm />
     </div>
   );

@@ -9,9 +9,10 @@ import {
 interface VideoPlayerProps {
   embedUrl: string;
   directVideo?: boolean;
+  onProgress?: (p: { seconds: number; percent: number; duration: number }) => void;
 }
 
-export function VideoPlayer({ embedUrl, directVideo = false }: VideoPlayerProps) {
+export function VideoPlayer({ embedUrl, directVideo = false, onProgress }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -257,7 +258,7 @@ export function VideoPlayer({ embedUrl, directVideo = false }: VideoPlayerProps)
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
-        onTimeUpdate={() => { if (!dragging.current && videoRef.current) setCurrentTime(videoRef.current.currentTime); }}
+        onTimeUpdate={() => { if (!dragging.current && videoRef.current) { setCurrentTime(videoRef.current.currentTime); onProgress?.({ seconds: Math.floor(videoRef.current.currentTime), percent: progressPct, duration: videoRef.current.duration }); } }}
         onDurationChange={() => { if (videoRef.current && isFinite(videoRef.current.duration)) setDuration(videoRef.current.duration); }}
       />
 

@@ -23,9 +23,9 @@ export function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
       })
       .catch(() => {});
 
-    // Refresh status from DB cache
+    // Refresh status from DB cache (no Jikan dependency)
     if (bookmarks.length > 0) {
-      fetch("/api/anime/cache", {
+      fetch("/api/anime/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ malIds: bookmarks.map((b) => b.malId) }),
@@ -33,8 +33,8 @@ export function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
         .then((r) => r.json())
         .then((d) => {
           const map: Record<number, string> = {};
-          for (const [id, info] of Object.entries(d.results || {}) as [string, { status?: string }][]) {
-            if (info?.status) map[Number(id)] = info.status;
+          for (const [id, status] of Object.entries(d.results || {}) as [string, string][]) {
+            if (status) map[Number(id)] = status;
           }
           setAnimeStatuses(map);
         })
@@ -51,13 +51,10 @@ export function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
   }
 
   function isCompleted(b: Bookmark): boolean {
-    // First check bookmark's own status (most recent)
-    if (b.status === "completed") return true;
-    if (b.status === "ongoing") return false;
-    // Fallback to cached anime status
     const s = animeStatuses[b.malId];
     if (!s) return false;
-    return s.toLowerCase() === "completed" || s.toLowerCase() === "finished airing";
+    const sl = s.toLowerCase();
+    return sl === "finished airing" || sl === "complete";
   }
 
   const completed = bookmarks.filter(isCompleted);

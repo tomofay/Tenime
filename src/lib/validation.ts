@@ -25,6 +25,8 @@ export const watchHistoryCreateSchema = z.object({
   posterUrl: z.string().url().optional().nullable(),
   episodeNumber: z.number().int().positive(),
   episodeTitle: z.string().optional().nullable(),
+  progressPercent: z.number().min(0).max(100).optional().default(0),
+  progressSeconds: z.number().min(0).max(100000).optional().default(0),
 });
 
 export const downloadSchema = z.object({

@@ -7,7 +7,7 @@ export const OTAKUDESU_FALLBACK_URLS = [
   "https://otakudesu.ink",
 ];
 
-export const SITE_NAME = "Tenime";
+export const SITE_NAME = "Kicaunime";
 export const SITE_TAGLINE = "Streaming Anime Subtitle Indonesia";
 
 export const GENRE_LIST: Record<number, string> = {
@@ -22,7 +22,6 @@ export const GENRE_LIST: Record<number, string> = {
   9: "Ecchi",
   10: "Fantasy",
   11: "Strategy Game",
-  12: "Hentai",
   13: "Historical",
   14: "Horror",
   15: "Kids",

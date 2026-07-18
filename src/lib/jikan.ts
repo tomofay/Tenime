@@ -5,12 +5,18 @@ import type { AnimeCharacterListResponse } from "@/types/anime";
 let lastRequestTime = 0;
 const MIN_INTERVAL_MS = 350;
 
-async function rateLimitedFetch(url: string): Promise<Response> {
+async function rateLimitedFetch(url: string, attempt = 0): Promise<Response> {
   const now = Date.now();
   const waitTime = MIN_INTERVAL_MS - (now - lastRequestTime);
   if (waitTime > 0) await new Promise((resolve) => setTimeout(resolve, waitTime));
   lastRequestTime = Date.now();
-  return fetch(url);
+  const res = await fetch(url);
+  if (res.status === 429 && attempt < 3) {
+    handleRateLimit();
+    await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    return rateLimitedFetch(url, attempt + 1);
+  }
+  return res;
 }
 
 interface PaginatedResponse<T> {
@@ -85,6 +91,13 @@ export async function getSchedules(day: string, page = 1): Promise<PaginatedResp
   if (res.status === 429) { handleRateLimit(); throw new Error("Jikan 429"); }
   if (!res.ok) throw new Error(`Jikan API error: ${res.status}`);
   return res.json();
+}
+
+export async function getLatestMalId(): Promise<number> {
+  const res = await rateLimitedFetch(`${JIKAN_BASE_URL}/anime?order_by=mal_id&sort=desc&limit=1`);
+  if (!res.ok) throw new Error(`Jikan API error: ${res.status}`);
+  const json = await res.json() as { data: { mal_id: number }[] };
+  return json.data[0]?.mal_id || 70000;
 }
 
 export async function searchAnime(query: string, page = 1): Promise<PaginatedResponse<Anime>> {

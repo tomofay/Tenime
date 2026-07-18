@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSchedules } from "@/lib/jikan";
 import { cacheAnimeData } from "@/lib/anime-cache";
+import { filterNsfw } from "@/lib/nsfw";
 import { db } from "@/lib/db";
+
+function isNsfwRecord(a: Record<string, unknown>): boolean {
+  const rating = ((a.rating as string) || "").toLowerCase();
+  if (rating.includes("rx") || rating.includes("hentai")) return true;
+  const explicit = a.explicit_genres as Array<{ name?: string }> | undefined;
+  if (explicit && explicit.length > 0) return true;
+  return false;
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,6 +19,16 @@ export async function GET(request: Request) {
   // Try Jikan first
   try {
     const result = await getSchedules(day);
+
+    // Keep only currently-airing anime. Jikan's schedule endpoint also
+    // returns finished shows that still carry a broadcast.day, so filter
+    // them out by status.
+    result.data = filterNsfw(
+      result.data.filter((a) => {
+        const s = (a.status as string | undefined)?.toLowerCase() || "";
+        return s === "currently airing";
+      })
+    );
 
     for (const anime of result.data) {
       cacheAnimeData(anime.mal_id, anime).catch(() => {});
@@ -27,11 +46,16 @@ export async function GET(request: Request) {
       orderBy: { updatedAt: "desc" },
     });
 
+    const dayNorm = day.trim().toLowerCase();
     const results = allCached
       .map((c) => c.data as Record<string, unknown>)
+      .filter((a) => !isNsfwRecord(a))
       .filter((a) => {
         const s = (a.status as string)?.toLowerCase() || "";
-        return s === "currently airing" || s === "not yet aired";
+        if (s !== "currently airing") return false;
+        const bDay = (a.broadcast as { day?: string | null } | undefined)?.day;
+        if (!bDay) return false;
+        return bDay.toLowerCase().replace(/s$/, "") === dayNorm;
       })
       .slice(0, 100);
 

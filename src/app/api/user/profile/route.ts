@@ -33,8 +33,11 @@ export async function POST(request: Request) {
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: "Invalid file type. Allowed: PNG, JPEG, WebP, GIF" }, { status: 400 });
     }
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large. Max 5MB" }, { status: 400 });
+    // Animated GIFs are heavier, so allow a larger cap for them.
+    const maxBytes = file.type === "image/gif" ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      const mb = Math.round(maxBytes / (1024 * 1024));
+      return NextResponse.json({ error: `File too large. Max ${mb}MB` }, { status: 400 });
     }
 
     await ensureDir();

@@ -98,7 +98,7 @@ export function HeroBanner({ anime }: HeroBannerProps) {
           {/* CTA */}
           <Link
             href={`/anime/${anime.mal_id}`}
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover transition-colors shadow-lg shadow-accent/25"
+            className="pressable mt-6 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover transition-colors shadow-lg shadow-accent/25"
           >
             <Play className="h-4 w-4 fill-white" />
             Tonton Sekarang

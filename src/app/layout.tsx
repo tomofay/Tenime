@@ -15,13 +15,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tenime — Streaming Anime Sub Indo",
-    template: "%s | Tenime",
+    default: "Kicaunime — Streaming Anime Sub Indo",
+    template: "%s | Kicaunime",
   },
   description:
     "Nonton anime subtitle Indonesia gratis, tanpa iklan pop-up. UI modern, ringan, dan cepat.",
   openGraph: {
-    title: "Tenime — Streaming Anime Sub Indo",
+    title: "Kicaunime — Streaming Anime Sub Indo",
     description: "Nonton anime subtitle Indonesia gratis, tanpa iklan pop-up.",
     type: "website",
   },
@@ -29,12 +29,15 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Tenime",
+    title: "Kicaunime",
   },
 };
 
 export const viewport: Viewport = {
   themeColor: "#6d28d9",
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

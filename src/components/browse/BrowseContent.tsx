@@ -7,7 +7,8 @@ import { useFilterStore, type AnimeType, type AnimeStatus, type SortField } from
 import { FilterSidebar } from "@/components/browse/FilterSidebar";
 import { FilterSheet } from "@/components/browse/FilterSheet";
 import { AnimeGrid } from "@/components/browse/AnimeGrid";
-import { SlidersHorizontal } from "lucide-react";
+import { X, SlidersHorizontal } from "lucide-react";
+import { GENRE_LIST } from "@/lib/constants";
 
 export function BrowseContent() {
   const searchParams = useSearchParams();
@@ -29,6 +30,8 @@ export function BrowseContent() {
   const setSort = useFilterStore((s) => s.setSort);
   const setSortDirection = useFilterStore((s) => s.setSortDirection);
   const setSeasonValue = useFilterStore((s) => s.setSeasonValue);
+  const toggleGenre = useFilterStore((s) => s.toggleGenre);
+  const resetFilters = useFilterStore((s) => s.resetFilters);
 
   // Sync URL → State on mount (only once)
   useEffect(() => {
@@ -52,6 +55,16 @@ export function BrowseContent() {
     if (dir === "asc" || dir === "desc") setSortDirection(dir);
     if (ssn) setSeasonValue(ssn);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const activeChips: { label: string; onClear: () => void }[] = [];
+  if (query) activeChips.push({ label: `"${query}"`, onClear: () => setQuery("") });
+  if (type) activeChips.push({ label: type.toUpperCase(), onClear: () => setType("") });
+  if (status) activeChips.push({ label: status, onClear: () => setStatus("") });
+  if (seasonValue) activeChips.push({ label: seasonValue, onClear: () => setSeasonValue("") });
+  for (const id of genres) {
+    const name = (GENRE_LIST as Record<string, string>)[String(id)] ?? `#${id}`;
+    activeChips.push({ label: name, onClear: () => toggleGenre(id) });
+  }
 
   // Sync State → URL on change
   useEffect(() => {
@@ -81,7 +94,7 @@ export function BrowseContent() {
         </h1>
         <button
           onClick={toggleMobileFilter}
-          className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted hover:text-foreground transition-colors"
+          className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           <SlidersHorizontal className="h-4 w-4" />
           Filter
@@ -103,6 +116,36 @@ export function BrowseContent() {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <h2 className="text-base font-semibold text-foreground whitespace-nowrap">
+              {query ? `Hasil untuk "${query}"` : "Semua Anime"}
+            </h2>
+            {activeChips.length > 0 && (
+              <button
+                onClick={resetFilters}
+                className="shrink-0 text-xs text-accent hover:text-accent-hover transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded"
+              >
+                Hapus filter
+              </button>
+            )}
+          </div>
+
+          {activeChips.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              {activeChips.map((chip, i) => (
+                <button
+                  key={i}
+                  onClick={chip.onClear}
+                  className="motion-safe:animate-chip-in inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-muted hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                  style={{ animationDelay: `${Math.min(i, 8) * 20}ms` }}
+                >
+                  {chip.label}
+                  <X className="h-3 w-3" />
+                </button>
+              ))}
+            </div>
+          )}
+
           <AnimeGrid />
         </div>
       </div>

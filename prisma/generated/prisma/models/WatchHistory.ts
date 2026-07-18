@@ -30,12 +30,14 @@ export type WatchHistoryAvgAggregateOutputType = {
   malId: number | null
   episodeNumber: number | null
   progressPercent: number | null
+  progressSeconds: number | null
 }
 
 export type WatchHistorySumAggregateOutputType = {
   malId: number | null
   episodeNumber: number | null
   progressPercent: number | null
+  progressSeconds: number | null
 }
 
 export type WatchHistoryMinAggregateOutputType = {
@@ -47,6 +49,7 @@ export type WatchHistoryMinAggregateOutputType = {
   episodeNumber: number | null
   episodeTitle: string | null
   progressPercent: number | null
+  progressSeconds: number | null
   watchedAt: Date | null
 }
 
@@ -59,6 +62,7 @@ export type WatchHistoryMaxAggregateOutputType = {
   episodeNumber: number | null
   episodeTitle: string | null
   progressPercent: number | null
+  progressSeconds: number | null
   watchedAt: Date | null
 }
 
@@ -71,6 +75,7 @@ export type WatchHistoryCountAggregateOutputType = {
   episodeNumber: number
   episodeTitle: number
   progressPercent: number
+  progressSeconds: number
   watchedAt: number
   _all: number
 }
@@ -80,12 +85,14 @@ export type WatchHistoryAvgAggregateInputType = {
   malId?: true
   episodeNumber?: true
   progressPercent?: true
+  progressSeconds?: true
 }
 
 export type WatchHistorySumAggregateInputType = {
   malId?: true
   episodeNumber?: true
   progressPercent?: true
+  progressSeconds?: true
 }
 
 export type WatchHistoryMinAggregateInputType = {
@@ -97,6 +104,7 @@ export type WatchHistoryMinAggregateInputType = {
   episodeNumber?: true
   episodeTitle?: true
   progressPercent?: true
+  progressSeconds?: true
   watchedAt?: true
 }
 
@@ -109,6 +117,7 @@ export type WatchHistoryMaxAggregateInputType = {
   episodeNumber?: true
   episodeTitle?: true
   progressPercent?: true
+  progressSeconds?: true
   watchedAt?: true
 }
 
@@ -121,6 +130,7 @@ export type WatchHistoryCountAggregateInputType = {
   episodeNumber?: true
   episodeTitle?: true
   progressPercent?: true
+  progressSeconds?: true
   watchedAt?: true
   _all?: true
 }
@@ -220,6 +230,7 @@ export type WatchHistoryGroupByOutputType = {
   episodeNumber: number
   episodeTitle: string | null
   progressPercent: number
+  progressSeconds: number
   watchedAt: Date
   _count: WatchHistoryCountAggregateOutputType | null
   _avg: WatchHistoryAvgAggregateOutputType | null
@@ -255,6 +266,7 @@ export type WatchHistoryWhereInput = {
   episodeNumber?: Prisma.IntFilter<"WatchHistory"> | number
   episodeTitle?: Prisma.StringNullableFilter<"WatchHistory"> | string | null
   progressPercent?: Prisma.IntFilter<"WatchHistory"> | number
+  progressSeconds?: Prisma.IntFilter<"WatchHistory"> | number
   watchedAt?: Prisma.DateTimeFilter<"WatchHistory"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -268,6 +280,7 @@ export type WatchHistoryOrderByWithRelationInput = {
   episodeNumber?: Prisma.SortOrder
   episodeTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
   watchedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   _relevance?: Prisma.WatchHistoryOrderByRelevanceInput
@@ -286,6 +299,7 @@ export type WatchHistoryWhereUniqueInput = Prisma.AtLeast<{
   episodeNumber?: Prisma.IntFilter<"WatchHistory"> | number
   episodeTitle?: Prisma.StringNullableFilter<"WatchHistory"> | string | null
   progressPercent?: Prisma.IntFilter<"WatchHistory"> | number
+  progressSeconds?: Prisma.IntFilter<"WatchHistory"> | number
   watchedAt?: Prisma.DateTimeFilter<"WatchHistory"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId_malId_episodeNumber">
@@ -299,6 +313,7 @@ export type WatchHistoryOrderByWithAggregationInput = {
   episodeNumber?: Prisma.SortOrder
   episodeTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
   watchedAt?: Prisma.SortOrder
   _count?: Prisma.WatchHistoryCountOrderByAggregateInput
   _avg?: Prisma.WatchHistoryAvgOrderByAggregateInput
@@ -319,6 +334,7 @@ export type WatchHistoryScalarWhereWithAggregatesInput = {
   episodeNumber?: Prisma.IntWithAggregatesFilter<"WatchHistory"> | number
   episodeTitle?: Prisma.StringNullableWithAggregatesFilter<"WatchHistory"> | string | null
   progressPercent?: Prisma.IntWithAggregatesFilter<"WatchHistory"> | number
+  progressSeconds?: Prisma.IntWithAggregatesFilter<"WatchHistory"> | number
   watchedAt?: Prisma.DateTimeWithAggregatesFilter<"WatchHistory"> | Date | string
 }
 
@@ -330,6 +346,7 @@ export type WatchHistoryCreateInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutWatchHistoryInput
 }
@@ -343,6 +360,7 @@ export type WatchHistoryUncheckedCreateInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
 }
 
@@ -354,6 +372,7 @@ export type WatchHistoryUpdateInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutWatchHistoryNestedInput
 }
@@ -367,6 +386,7 @@ export type WatchHistoryUncheckedUpdateInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -379,6 +399,7 @@ export type WatchHistoryCreateManyInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
 }
 
@@ -390,6 +411,7 @@ export type WatchHistoryUpdateManyMutationInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -402,6 +424,7 @@ export type WatchHistoryUncheckedUpdateManyInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -436,6 +459,7 @@ export type WatchHistoryCountOrderByAggregateInput = {
   episodeNumber?: Prisma.SortOrder
   episodeTitle?: Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
   watchedAt?: Prisma.SortOrder
 }
 
@@ -443,6 +467,7 @@ export type WatchHistoryAvgOrderByAggregateInput = {
   malId?: Prisma.SortOrder
   episodeNumber?: Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
 }
 
 export type WatchHistoryMaxOrderByAggregateInput = {
@@ -454,6 +479,7 @@ export type WatchHistoryMaxOrderByAggregateInput = {
   episodeNumber?: Prisma.SortOrder
   episodeTitle?: Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
   watchedAt?: Prisma.SortOrder
 }
 
@@ -466,6 +492,7 @@ export type WatchHistoryMinOrderByAggregateInput = {
   episodeNumber?: Prisma.SortOrder
   episodeTitle?: Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
   watchedAt?: Prisma.SortOrder
 }
 
@@ -473,6 +500,7 @@ export type WatchHistorySumOrderByAggregateInput = {
   malId?: Prisma.SortOrder
   episodeNumber?: Prisma.SortOrder
   progressPercent?: Prisma.SortOrder
+  progressSeconds?: Prisma.SortOrder
 }
 
 export type WatchHistoryCreateNestedManyWithoutUserInput = {
@@ -525,6 +553,7 @@ export type WatchHistoryCreateWithoutUserInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
 }
 
@@ -536,6 +565,7 @@ export type WatchHistoryUncheckedCreateWithoutUserInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
 }
 
@@ -577,6 +607,7 @@ export type WatchHistoryScalarWhereInput = {
   episodeNumber?: Prisma.IntFilter<"WatchHistory"> | number
   episodeTitle?: Prisma.StringNullableFilter<"WatchHistory"> | string | null
   progressPercent?: Prisma.IntFilter<"WatchHistory"> | number
+  progressSeconds?: Prisma.IntFilter<"WatchHistory"> | number
   watchedAt?: Prisma.DateTimeFilter<"WatchHistory"> | Date | string
 }
 
@@ -588,6 +619,7 @@ export type WatchHistoryCreateManyUserInput = {
   episodeNumber: number
   episodeTitle?: string | null
   progressPercent?: number
+  progressSeconds?: number
   watchedAt?: Date | string
 }
 
@@ -599,6 +631,7 @@ export type WatchHistoryUpdateWithoutUserInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -610,6 +643,7 @@ export type WatchHistoryUncheckedUpdateWithoutUserInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -621,6 +655,7 @@ export type WatchHistoryUncheckedUpdateManyWithoutUserInput = {
   episodeNumber?: Prisma.IntFieldUpdateOperationsInput | number
   episodeTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressPercent?: Prisma.IntFieldUpdateOperationsInput | number
+  progressSeconds?: Prisma.IntFieldUpdateOperationsInput | number
   watchedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -635,6 +670,7 @@ export type WatchHistorySelect<ExtArgs extends runtime.Types.Extensions.Internal
   episodeNumber?: boolean
   episodeTitle?: boolean
   progressPercent?: boolean
+  progressSeconds?: boolean
   watchedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["watchHistory"]>
@@ -650,10 +686,11 @@ export type WatchHistorySelectScalar = {
   episodeNumber?: boolean
   episodeTitle?: boolean
   progressPercent?: boolean
+  progressSeconds?: boolean
   watchedAt?: boolean
 }
 
-export type WatchHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "malId" | "animeTitle" | "posterUrl" | "episodeNumber" | "episodeTitle" | "progressPercent" | "watchedAt", ExtArgs["result"]["watchHistory"]>
+export type WatchHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "malId" | "animeTitle" | "posterUrl" | "episodeNumber" | "episodeTitle" | "progressPercent" | "progressSeconds" | "watchedAt", ExtArgs["result"]["watchHistory"]>
 export type WatchHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -672,6 +709,7 @@ export type $WatchHistoryPayload<ExtArgs extends runtime.Types.Extensions.Intern
     episodeNumber: number
     episodeTitle: string | null
     progressPercent: number
+    progressSeconds: number
     watchedAt: Date
   }, ExtArgs["result"]["watchHistory"]>
   composites: {}
@@ -1051,6 +1089,7 @@ export interface WatchHistoryFieldRefs {
   readonly episodeNumber: Prisma.FieldRef<"WatchHistory", 'Int'>
   readonly episodeTitle: Prisma.FieldRef<"WatchHistory", 'String'>
   readonly progressPercent: Prisma.FieldRef<"WatchHistory", 'Int'>
+  readonly progressSeconds: Prisma.FieldRef<"WatchHistory", 'Int'>
   readonly watchedAt: Prisma.FieldRef<"WatchHistory", 'DateTime'>
 }
     

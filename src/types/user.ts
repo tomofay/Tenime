@@ -26,5 +26,6 @@ export interface WatchHistory {
   episodeNumber: number;
   episodeTitle: string | null;
   progressPercent: number;
+  progressSeconds: number;
   watchedAt: string;
 }

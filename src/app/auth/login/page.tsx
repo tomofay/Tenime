@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Login ke akun Tenime kamu.",
+  description: "Login ke akun Kicaunime kamu.",
 };
 
 export default function LoginPage() {
@@ -14,7 +14,7 @@ export default function LoginPage() {
           Login
         </h1>
         <p className="text-sm text-muted text-center mt-1 mb-8">
-          Welcome back to Tenime
+          Welcome back to Kicaunime
         </p>
         <AuthForm mode="login" />
       </div>

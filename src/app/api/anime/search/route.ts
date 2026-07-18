@@ -1,6 +1,43 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { JIKAN_BASE_URL } from "@/lib/constants";
+import { toCardWithLocalPoster } from "@/lib/poster";
+
+function isNsfwRecord(a: Record<string, unknown>): boolean {
+  const rating = ((a.rating as string) || "").toLowerCase();
+  if (rating.includes("rx") || rating.includes("hentai")) return true;
+  const explicit = a.explicit_genres as Array<{ name?: string }> | undefined;
+  if (explicit && explicit.length > 0) return true;
+  return false;
+}
+
+function filterNsfw(list: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
+  return list.filter((a) => !isNsfwRecord(a));
+}
+
+async function fetchJikanWithRetry(url: string, attempt = 0): Promise<Response | null> {
+  const MAX = 2;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(url, { signal: controller.signal, headers: { Accept: "application/json" } });
+    clearTimeout(timeout);
+    if (res.ok) return res;
+    // Retry on transient failures (429 rate limit, 5xx, 504 gateway)
+    if (attempt < MAX && (res.status === 429 || res.status >= 500)) {
+      const backoff = res.status === 429 ? 1000 * (attempt + 1) : 600 * (attempt + 1);
+      await new Promise((r) => setTimeout(r, backoff));
+      return fetchJikanWithRetry(url, attempt + 1);
+    }
+    return res;
+  } catch {
+    if (attempt < MAX) {
+      await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+      return fetchJikanWithRetry(url, attempt + 1);
+    }
+    return null;
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -30,17 +67,10 @@ export async function GET(request: Request) {
   // Try Jikan first
   let usedJikan = false;
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
     const url = `${JIKAN_BASE_URL}/anime?${jikanParams.toString()}`;
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "Accept": "application/json" },
-    });
-    clearTimeout(timeout);
+    const res = await fetchJikanWithRetry(url);
 
-    if (res.ok) {
+    if (res && res.ok) {
       usedJikan = true;
       const json = await res.json();
       console.log(`[api/anime/search] Jikan OK: ${json.data?.length || 0} results`);
@@ -56,7 +86,14 @@ export async function GET(request: Request) {
           )
         );
       }
-      return NextResponse.json(json);
+      const safeData = filterNsfw((json.data as Array<Record<string, unknown>>) ?? []);
+      return NextResponse.json({ ...json, data: safeData.map(toCardWithLocalPoster) });
+    }
+
+    if (res) {
+      console.warn(`[api/anime/search] Jikan responded ${res.status}, falling back to cache`);
+    } else {
+      console.warn("[api/anime/search] Jikan unreachable after retries, falling back to cache");
     }
   } catch (e) {
     console.warn("[api/anime/search] Primary Jikan failed:", (e as Error).message);
@@ -96,7 +133,7 @@ export async function GET(request: Request) {
             );
           }
           return NextResponse.json({
-            data: json.data,
+            data: filterNsfw((json.data as Array<Record<string, unknown>>) ?? []).map(toCardWithLocalPoster),
             pagination: { last_visible_page: 1, has_next_page: false, current_page: 1, items: { count: json.data?.length || 0, total: json.data?.length || 0, per_page: 25 } },
           });
         }
@@ -118,7 +155,7 @@ export async function GET(request: Request) {
     const queryFilter = query?.toLowerCase();
     const genreIds = genres ? genres.split(",").map(Number) : [];
 
-    let results = allCached.map((c) => c.data as Record<string, unknown>);
+    let results = filterNsfw(allCached.map((c) => c.data as Record<string, unknown>));
 
     if (queryFilter) {
       results = results.filter((a) =>
@@ -168,8 +205,21 @@ export async function GET(request: Request) {
     const paged = results.slice(start, start + pageSize);
     const hasNextPage = start + pageSize < total;
 
+    // If Jikan was unreachable and the cache has no results, signal a retry
+    // instead of pretending the search found nothing.
+    if (!usedJikan && total === 0) {
+      return NextResponse.json(
+        {
+          data: [],
+          pagination: { last_visible_page: 0, has_next_page: false, current_page: 1, items: { count: 0, total: 0, per_page: 25 } },
+          error: "source_unavailable",
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
-      data: paged,
+      data: paged.map(toCardWithLocalPoster),
       pagination: {
         last_visible_page: Math.ceil(total / pageSize),
         has_next_page: hasNextPage,

@@ -22,6 +22,7 @@ interface SearchResult {
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [closing, setClosing] = useState(false);
 
   useEffect(() => {
     openPalette = () => { setOpen(true); };
@@ -34,6 +35,11 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => { setClosing(false); setOpen(false); }, 160);
+  }, []);
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -43,11 +49,11 @@ export function CommandPalette() {
         setResults([]);
         setSelected(0);
       }
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") handleClose();
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [handleClose]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
@@ -70,9 +76,9 @@ export function CommandPalette() {
   }, [query]);
 
   const navigate = useCallback((item: SearchResult) => {
-    setOpen(false);
-    router.push(`/anime/${item.mal_id}`);
-  }, [router]);
+    handleClose();
+    setTimeout(() => router.push(`/anime/${item.mal_id}`), 120);
+  }, [router, handleClose]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") { e.preventDefault(); setSelected((s) => Math.min(s + 1, results.length - 1)); }
@@ -84,8 +90,8 @@ export function CommandPalette() {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]">
-      <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-      <div className="relative w-full max-w-lg mx-4 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden">
+      <div className={`absolute inset-0 bg-black/60 motion-safe:animate-overlay-in ${closing ? "opacity-0 transition-opacity duration-150" : ""}`} onClick={handleClose} />
+      <div className={`relative w-full max-w-lg mx-4 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden motion-safe:animate-palette-pop ${closing ? "opacity-0 scale-[0.98] transition-all duration-150 ease-in" : ""}`}>
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           <Search className="h-4 w-4 text-muted shrink-0" />
           <input
@@ -94,7 +100,7 @@ export function CommandPalette() {
             onChange={(e) => { setQuery(e.target.value); setSelected(0); }}
             onKeyDown={onKeyDown}
             placeholder="Cari anime... (tekan ↑↓ untuk navigasi)"
-            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted/50 outline-none"
+            className="flex-1 bg-transparent text-base sm:text-sm text-foreground placeholder:text-muted/50 outline-none"
           />
           <kbd className="text-[10px] text-muted/50 bg-black/20 rounded px-1.5 py-0.5">ESC</kbd>
         </div>

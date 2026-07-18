@@ -15,7 +15,7 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/_next/")
   ) {
     event.respondWith(
-      caches.open("tenime-assets-v1").then(async (cache) => {
+      caches.open("kicaunime-assets-v1").then(async (cache) => {
         const cached = await cache.match(event.request);
         if (cached) return cached;
         try {
@@ -33,7 +33,7 @@ self.addEventListener("fetch", (event) => {
   // Cache posters from our public cache directory
   if (url.pathname.startsWith("/cache/posters/")) {
     event.respondWith(
-      caches.open("tenime-posters-v1").then(async (cache) => {
+      caches.open("kicaunime-posters-v1").then(async (cache) => {
         const cached = await cache.match(event.request);
         if (cached) return cached;
         try {

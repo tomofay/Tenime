@@ -126,6 +126,7 @@ export const WatchHistoryScalarFieldEnum = {
   episodeNumber: 'episodeNumber',
   episodeTitle: 'episodeTitle',
   progressPercent: 'progressPercent',
+  progressSeconds: 'progressSeconds',
   watchedAt: 'watchedAt'
 } as const
 

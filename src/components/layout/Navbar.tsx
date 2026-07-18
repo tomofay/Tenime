@@ -28,10 +28,10 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 h-14">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 h-14 pt-[env(safe-area-inset-top)]">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Play className="h-5 w-5 text-accent fill-accent" />
-          <span className="text-lg font-bold tracking-tight text-foreground">Tenime</span>
+          <span className="text-lg font-bold tracking-tight text-foreground">Kicaunime</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

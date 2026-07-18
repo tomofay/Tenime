@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, use } from "react";
+import { useState, useCallback, useRef, use } from "react";
 import Link from "next/link";
 import { useAnimeDetail } from "@/hooks/useAnimeDetail";
 import { useAnimeEpisodes } from "@/hooks/useAnimeEpisodes";
@@ -40,7 +40,15 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
 
   const isPlaying = !!streamSource && !isLoading && !!streamSource.embedUrl;
   useAutoplay({ malId: id, currentEpisode: ep, totalEpisodes, isPlaying });
-  useAutoSaveHistory(id, ep, anime?.title ?? "", anime?.images?.webp?.large_image_url, currentEpisodeTitle);
+  const { reportProgress } = useAutoSaveHistory(id, ep, anime?.title ?? "", anime?.images?.webp?.large_image_url, currentEpisodeTitle);
+
+  const lastReportRef = useRef<number>(0);
+  const handleProgress = useCallback((p: { seconds: number; percent: number; duration: number }) => {
+    const now = Date.now();
+    if (now - lastReportRef.current < 15_000) return;
+    lastReportRef.current = now;
+    reportProgress(p);
+  }, [reportProgress]);
 
   return (
     <div className="flex-1 max-w-7xl mx-auto px-4 py-4 sm:py-6 w-full">
@@ -57,7 +65,7 @@ export default function WatchPage({ params }: { params: Promise<{ malId: string;
           <div className="rounded-xl overflow-hidden shadow-2xl shadow-black/30">
             {isLoading && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3"><div className="h-10 w-10 animate-spin rounded-full border-2 border-accent border-t-transparent" /><p className="text-sm text-white/60">Mencari sumber video...</p></div></div>}
             {isError && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3 text-center px-4"><p className="text-sm text-white/60">Gagal menemukan episode ini.</p></div></div>}
-            {streamSource && !isLoading && streamSource.embedUrl && <VideoPlayer embedUrl={embedUrl} directVideo={isDirectVideo || embedUrl.includes("googlevideo.com")} />}
+            {streamSource && !isLoading && streamSource.embedUrl && <VideoPlayer embedUrl={embedUrl} directVideo={isDirectVideo || embedUrl.includes("googlevideo.com")} onProgress={handleProgress} />}
             {streamSource && !isLoading && !streamSource.embedUrl && <div className="w-full aspect-video bg-black rounded-xl flex items-center justify-center"><div className="flex flex-col items-center gap-3 text-center px-4"><p className="text-sm text-white/60">Sumber video tidak ditemukan.</p></div></div>}
           </div>
 

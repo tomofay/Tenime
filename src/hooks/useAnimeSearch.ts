@@ -43,8 +43,12 @@ export function useAnimeSearch() {
       }
       sp.set("page", String(pageParam));
 
-      return fetch(`/api/anime/search?${sp.toString()}`).then((r) => {
-        if (!r.ok) throw new Error(`Search failed: ${r.status}`);
+      return fetch(`/api/anime/search?${sp.toString()}`).then(async (r) => {
+        if (!r.ok) {
+          const err = new Error(`Search failed: ${r.status}`) as Error & { response?: { status: number } };
+          err.response = { status: r.status };
+          throw err;
+        }
         return r.json();
       });
     },

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAnimeFull } from "@/lib/jikan";
 import { cacheAnimeData } from "@/lib/anime-cache";
+import { db } from "@/lib/db";
 import { cacheAnimeSchema } from "@/lib/validation";
 import { withRateLimit } from "@/lib/api-utils";
 
@@ -35,6 +36,23 @@ export async function POST(request: Request) {
           poster: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url || null,
         };
       } catch {
+        try {
+          const cached = await db.cachedAnime.findUnique({ where: { malId }, select: { data: true } });
+          if (cached) {
+            const a = cached.data as Record<string, unknown>;
+            const images = a.images as { webp?: { large_image_url: string }; jpg?: { large_image_url: string } } | undefined;
+            results[String(malId)] = {
+              title: a.title,
+              episodes: a.episodes,
+              score: a.score,
+              status: a.status,
+              type: a.type,
+              year: a.year,
+              poster: images?.webp?.large_image_url || images?.jpg?.large_image_url || null,
+            };
+            continue;
+          }
+        } catch { /* ignore DB fallback */ }
         results[String(malId)] = { error: "failed" };
       }
     }

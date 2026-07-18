@@ -17,6 +17,138 @@
   scrollbar-color: #374151 transparent;
 }
 
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes palette-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes state-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grid-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@theme inline {
+  --animate-card-in: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-overlay-in: overlay-in 0.2s ease-out both;
+  --animate-sheet-up: sheet-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-palette-pop: palette-pop 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-chip-in: chip-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-state-in: state-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-grid-in: grid-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-dot-in: dot-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-card-in,
+  .animate-overlay-in,
+  .animate-sheet-up,
+  .animate-palette-pop,
+  .animate-chip-in,
+  .animate-state-in,
+  .animate-grid-in,
+  .animate-dot-in {
+    animation: none;
+  }
+}
+
+@layer components {
+  .pressable {
+    transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .pressable:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .pressable-sm {
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .pressable-sm:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);

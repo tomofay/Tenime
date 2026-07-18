@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback, useEffect, useRef } from "react";
 import { X, SlidersHorizontal } from "lucide-react";
 import { useUIStore } from "@/store/useUIStore";
 import { SearchInput } from "./SearchInput";
@@ -78,18 +79,74 @@ export function FilterSheet() {
   const setSeasonValue = useFilterStore((s) => s.setSeasonValue);
   const resetFilters = useFilterStore((s) => s.resetFilters);
 
+  const [closing, setClosing] = useState(false);
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      setOpen(false);
+      restoreFocusRef.current?.focus();
+    }, 220);
+  }, [setOpen]);
+
+  // Capture the trigger on open, trap focus, close on Escape
+  useEffect(() => {
+    if (!open) return;
+    restoreFocusRef.current = document.activeElement as HTMLElement | null;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleClose();
+        return;
+      }
+      if (e.key !== "Tab" || !sheetRef.current) return;
+      const focusables = sheetRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    // Move focus into the sheet
+    requestAnimationFrame(() => {
+      const first = sheetRef.current?.querySelector<HTMLElement>("button, input, select, [tabindex]:not([tabindex='-1'])");
+      first?.focus();
+    });
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, handleClose]);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60"
-        onClick={() => setOpen(false)}
+        className={`absolute inset-0 bg-black/60 motion-safe:animate-overlay-in ${closing ? "opacity-0 transition-opacity duration-200" : ""}`}
+        onClick={handleClose}
       />
 
       {/* Sheet */}
-      <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-xl bg-background border-t border-border px-4 py-4 animate-in slide-in-from-bottom">
+      <div
+        ref={sheetRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Filter anime"
+        className={`absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-xl bg-background border-t border-border px-4 py-4 motion-safe:animate-sheet-up ${closing ? "translate-y-full transition-transform duration-200 ease-in" : ""}`}
+        style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 text-sm font-medium">
@@ -99,13 +156,14 @@ export function FilterSheet() {
           <div className="flex items-center gap-3">
             <button
               onClick={resetFilters}
-              className="text-xs text-accent"
+              className="text-xs text-accent hover:text-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded"
             >
               Reset
             </button>
             <button
-              onClick={() => setOpen(false)}
-              className="rounded-md p-1 text-muted hover:text-foreground"
+              onClick={handleClose}
+              className="rounded-md p-1 text-muted hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+              aria-label="Tutup filter"
             >
               <X className="h-5 w-5" />
             </button>
@@ -123,11 +181,12 @@ export function FilterSheet() {
                 <button
                   key={t.value}
                   onClick={() => setType(t.value)}
+                  aria-pressed={type === t.value}
                   className={`rounded-md px-3 py-1 text-xs ${
                     type === t.value
                       ? "bg-accent text-white"
                       : "bg-surface text-muted"
-                  }`}
+                  } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
                 >
                   {t.label}
                 </button>
@@ -143,11 +202,12 @@ export function FilterSheet() {
                 <button
                   key={s.value}
                   onClick={() => setStatus(s.value)}
+                  aria-pressed={status === s.value}
                   className={`rounded-md px-3 py-1 text-xs ${
                     status === s.value
                       ? "bg-accent text-white"
                       : "bg-surface text-muted"
-                  }`}
+                  } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
                 >
                   {s.label}
                 </button>
@@ -161,7 +221,7 @@ export function FilterSheet() {
             <select
               value={seasonValue}
               onChange={(e) => setSeasonValue(e.target.value)}
-              className="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+              className="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-base text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             >
               {seasonOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -177,11 +237,12 @@ export function FilterSheet() {
                 <button
                   key={genre.id}
                   onClick={() => toggleGenre(genre.id)}
+                  aria-pressed={genres.includes(genre.id)}
                   className={`rounded-md px-2.5 py-1 text-xs ${
                     genres.includes(genre.id)
                       ? "bg-accent text-white"
                       : "bg-surface text-muted"
-                  }`}
+                  } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 pressable-sm`}
                 >
                   {genre.name}
                 </button>
@@ -196,7 +257,7 @@ export function FilterSheet() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortField)}
-                className="flex-1 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground"
+                className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
               >
                 {sortOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -209,7 +270,7 @@ export function FilterSheet() {
                   onClick={() =>
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc")
                   }
-                  className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-muted"
+                  className="rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
                 >
                   {sortDirection === "asc" ? "↑" : "↓"}
                 </button>

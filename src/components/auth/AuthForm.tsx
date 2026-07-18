@@ -81,7 +81,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             onChange={(e) => setUsername(e.target.value)}
             required
             minLength={3}
-            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50 transition-colors"
+            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-base sm:text-sm text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50 transition-colors"
             placeholder="johndoe"
           />
         </div>
@@ -100,7 +100,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50 transition-colors"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-base sm:text-sm text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50 transition-colors"
           placeholder="john@example.com"
         />
       </div>

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `watchhistory` ADD COLUMN `progressSeconds` INTEGER NOT NULL DEFAULT 0;

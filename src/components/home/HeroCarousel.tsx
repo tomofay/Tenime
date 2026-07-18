@@ -120,8 +120,8 @@ export function HeroCarousel({ animeList }: HeroCarouselProps) {
             </div>
             {anime.synopsis && <p className="mt-4 text-sm text-white/70 leading-relaxed line-clamp-3 max-w-2xl">{anime.synopsis}</p>}
             <div className="mt-6 flex items-center gap-3 pointer-events-auto">
-              <Link href={`/anime/${anime.mal_id}`} className="inline-flex items-center gap-2 rounded bg-white px-6 py-3 text-sm font-bold text-black hover:bg-white/90 transition-colors"><Play className="h-4 w-4 fill-black" />Tonton</Link>
-              <Link href={`/anime/${anime.mal_id}`} className="inline-flex items-center gap-2 rounded bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold text-white hover:bg-white/20 border border-white/10 transition-colors">Detail</Link>
+              <Link href={`/anime/${anime.mal_id}`} className="pressable inline-flex items-center gap-2 rounded bg-white px-6 py-3 text-sm font-bold text-black hover:bg-white/90 transition-colors"><Play className="h-4 w-4 fill-black" />Tonton</Link>
+              <Link href={`/anime/${anime.mal_id}`} className="pressable inline-flex items-center gap-2 rounded bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold text-white hover:bg-white/20 border border-white/10 transition-colors">Detail</Link>
             </div>
           </div>
         </div>
