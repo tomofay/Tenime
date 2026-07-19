@@ -7,7 +7,10 @@ interface CachedAnimeResponse {
   stale?: boolean;
 }
 
-export function useAnimeDetail(malId: number) {
+export function useAnimeDetail(
+  malId: number,
+  initialData?: { data: Anime; cached: boolean }
+) {
   return useQuery<CachedAnimeResponse>({
     queryKey: ["anime-detail", malId],
     queryFn: async () => {
@@ -15,6 +18,7 @@ export function useAnimeDetail(malId: number) {
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },
+    initialData: initialData ? { data: initialData.data, cached: initialData.cached } : undefined,
     staleTime: 10 * 60 * 1000,
     enabled: !!malId,
   });

@@ -38,7 +38,11 @@ export function HomePageClient() {
         </div>
       )}
 
-      {seasonalAnimeList.length > 0 && <HeroCarousel animeList={seasonalAnimeList} />}
+      {seasonalAnimeList.length > 0 ? (
+        <HeroCarousel animeList={seasonalAnimeList} />
+      ) : (
+        <div className="w-full h-[85vh] sm:h-[90vh] max-h-[800px] bg-surface animate-pulse" />
+      )}
 
       {continueWatching && continueWatching.length > 0 && (
         <ContinueWatchingSection entries={continueWatching} />

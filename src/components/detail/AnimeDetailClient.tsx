@@ -14,11 +14,12 @@ import { ShareButton } from "@/components/ui/ShareButton";
 
 interface AnimeDetailClientProps {
   malId: number;
+  initialData?: { data: import("@/types/anime").Anime; cached: boolean };
 }
 
-export function AnimeDetailClient({ malId }: AnimeDetailClientProps) {
+export function AnimeDetailClient({ malId, initialData }: AnimeDetailClientProps) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
-  const { data: response, isLoading: animeLoading, isError: animeError } = useAnimeDetail(malId);
+  const { data: response, isLoading: animeLoading, isError: animeError } = useAnimeDetail(malId, initialData);
   const { data: episodesData } = useAnimeEpisodes(malId);
 
   const anime = response?.data;
