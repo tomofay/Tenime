@@ -9,7 +9,7 @@ export const registerSchema = z.object({
 export const bookmarkCreateSchema = z.object({
   malId: z.number().int().positive(),
   title: z.string().min(1),
-  posterUrl: z.string().url().optional().nullable(),
+  posterUrl: z.string().min(1).optional().nullable(),
   score: z.number().min(0).max(10).optional().nullable(),
   type: z.string().optional().nullable(),
   status: z.string().optional().nullable(),
@@ -22,7 +22,7 @@ export const bookmarkDeleteSchema = z.object({
 export const watchHistoryCreateSchema = z.object({
   malId: z.number().int().positive(),
   animeTitle: z.string().min(1),
-  posterUrl: z.string().url().optional().nullable(),
+  posterUrl: z.string().min(1).optional().nullable(),
   episodeNumber: z.number().int().positive(),
   episodeTitle: z.string().optional().nullable(),
   progressPercent: z.number().min(0).max(100).optional().default(0),

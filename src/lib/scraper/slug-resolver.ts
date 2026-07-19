@@ -41,11 +41,17 @@ function extractSeasonNumber(title: string): number | null {
     /\bs(\d+)\b/i,
     /season\s*(\d+)/i,
     /(\d+)(?:st|nd|rd|th)\s*season/i,
+    /\b([IVX]+)\b(?=\s*:|\s*-|\s*\(|$|\s+(?:sub\s*indo|subtitle|indonesia)?\s*$)/i,
     /\b(\d+)$/,
   ];
   for (const p of patterns) {
     const m = title.match(p);
-    if (m) return parseInt(m[1]);
+    if (m) {
+      if (/^[IVX]+$/i.test(m[1])) {
+        return ROMAN_TO_NUM[m[1].toUpperCase()] ?? null;
+      }
+      return parseInt(m[1]);
+    }
   }
   return null;
 }
@@ -53,6 +59,27 @@ function extractSeasonNumber(title: string): number | null {
 function extractPartNumber(text: string): number | null {
   const m = text.match(/\bpart\s*(\d+)\b/i) || text.match(/\bbagian\s*(\d+)\b/i);
   return m ? parseInt(m[1]) : null;
+}
+
+const ROMAN_TO_NUM: Record<string, number> = {
+  I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9, X: 10,
+};
+
+// Convert trailing Roman-numeral season markers to "Season N", e.g.
+// "Mushoku Tensei III" -> "Mushoku Tensei Season 3"
+// Move a Roman-numeral season marker to the END as "Season N",
+// matching Otakudesu's title format, e.g.
+// "Mushoku Tensei III: Isekai Ittara Honki Dasu" ->
+// "Mushoku Tensei : Isekai Ittara Honki Dasu Season 3"
+function romanNumeralToSeason(title: string): string {
+  const m = title.match(
+    /\b([IVX]+)\b(?=\s*:|\s*-|\s*\(|\s*$|\s+(?:sub\s*indo|subtitle|indonesia)?\s*$)/i
+  );
+  if (!m) return title;
+  const n = ROMAN_TO_NUM[m[1].toUpperCase()];
+  if (!n) return title;
+  const stripped = title.replace(m[0], "").replace(/\s{2,}/g, " ").trim();
+  return `${stripped} Season ${n}`;
 }
 
 async function searchAndFindAnimeUrl(jikanTitle: string): Promise<string | null> {
@@ -64,9 +91,14 @@ async function searchAndFindAnimeUrl(jikanTitle: string): Promise<string | null>
     .replace(/\s+/g, " ")
     .trim();
 
+  const romanVariant = romanNumeralToSeason(jikanTitle);
+  const romanVariantTok = romanNumeralToSeason(tokenizeTitle(jikanTitle));
+
   // Generate search queries: multiple phrasing of the same title
   const searchQueries = [
-    jikanTitle,                                                                           // original: "Tensei Kizoku, Kantei Skill de Nariagaru 2nd Season"
+    jikanTitle,                                                                           // original: "Mushoku Tensei III: Isekai Ittara Honki Dasu"
+    romanVariant,                                                                         // "Mushoku Tensei Season 3: Isekai Ittara Honki Dasu"
+    romanVariantTok,                                                                      // "mushoku tensei season 3 isekai ittara honki dasu"
     tokenizeTitle(jikanTitle).replace(/(\d+)(st|nd|rd|th)\s+Season/i, "Season $1"),     // "tensei kizoku kantei skill de nariagaru Season 2"
     tokenizeTitle(jikanTitle).replace(/(\d+)(st|nd|rd|th)\s+Season/i, "season $1"),     // "tensei kizoku kantei skill de nariagaru season 2"
     baseTitle,                                                                             // "tensei kizoku kantei skill de nariagaru" (no season)
